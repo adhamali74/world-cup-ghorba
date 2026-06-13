@@ -42,7 +42,7 @@ function Admin() {
               await verifyFn({ data: { password: pw } });
               setOk(true);
             } catch {
-              toast.error("Wrong password");
+              toast.error("Wrong password. Even Messi's Ballon d'Or count is more accurate than that.");
             }
           }}
         >
