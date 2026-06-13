@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
+import trophyAsset from "@/assets/world-cup-trophy.webp.asset.json";
 
 export const Route = createFileRoute("/cr7")({
   head: () => ({
