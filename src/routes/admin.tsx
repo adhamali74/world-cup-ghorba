@@ -6,7 +6,8 @@ import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { supabase } from "@/integrations/supabase/client";
 import { submitResult, verifyAdmin } from "@/lib/api/admin.functions";
-import type { Match } from "@/lib/types";
+import { adminSetPin, adminClearPin } from "@/lib/api/auth.functions";
+import type { Match, Player } from "@/lib/types";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin · الغُربة و كاس العالم" }] }),
