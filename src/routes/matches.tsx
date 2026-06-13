@@ -88,19 +88,18 @@ function MatchesPage() {
 
   const [stage, setStage] = useState<string>("group");
   const filtered = useMemo(() => {
-    const inStage = matches.filter((m) => m.stage === stage);
     const now = Date.now();
     const isFinished = (m: Match) => m.home_score != null && m.away_score != null;
-    const live = inStage
-      .filter((m) => new Date(m.kickoff_at).getTime() <= now && !isFinished(m))
-      .sort((a, b) => +new Date(b.kickoff_at) - +new Date(a.kickoff_at));
-    const upcoming = inStage
-      .filter((m) => new Date(m.kickoff_at).getTime() > now)
+    return matches
+      .filter((m) => m.stage === stage)
+      // hide matches that have already kicked off (unless still live without a final score within ~2h)
+      .filter((m) => {
+        const ko = new Date(m.kickoff_at).getTime();
+        if (isFinished(m)) return false;
+        if (ko > now) return true;
+        return now - ko < 2 * 60 * 60 * 1000; // keep live for 2h
+      })
       .sort((a, b) => +new Date(a.kickoff_at) - +new Date(b.kickoff_at));
-    const finished = inStage
-      .filter(isFinished)
-      .sort((a, b) => +new Date(b.kickoff_at) - +new Date(a.kickoff_at));
-    return [...live, ...upcoming, ...finished];
   }, [matches, stage]);
 
   return (
