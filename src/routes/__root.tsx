@@ -111,7 +111,7 @@ function RootComponent() {
         className="fixed inset-0 -z-10 bg-center bg-cover bg-no-repeat"
         style={{ backgroundImage: "url(/__l5e/assets-v1/97b77e28-6337-4fdf-916e-625b487fbdb1/ronaldo-bg.jpg)" }}
       />
-      <div aria-hidden className="fixed inset-0 -z-10 bg-background/80 backdrop-blur-sm" />
+      <div aria-hidden className="fixed inset-0 -z-10 bg-background/55" />
       <div className="relative z-10">
         <Outlet />
       </div>
