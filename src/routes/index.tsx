@@ -21,7 +21,10 @@ function Landing() {
   const { data: players = [] } = useQuery({
     queryKey: ["players"],
     queryFn: async () => {
-      const { data } = await supabase.from("players").select("*").order("name");
+      const { data } = await supabase
+        .from("players")
+        .select("id, slug, name, avatar_color, is_admin")
+        .order("name");
       return (data ?? []) as Player[];
     },
   });
@@ -85,10 +88,10 @@ function Landing() {
           </p>
 
           <button
-            onClick={() => navigate({ to: slug ? "/dashboard" : "/dashboard" })}
+            onClick={() => navigate({ to: slug ? "/dashboard" : "/auth" })}
             className="btn-hero mt-10 pulse-gold"
           >
-            ENTER THE COMPETITION
+            {slug ? "ENTER THE COMPETITION" : "SIGN IN TO PLAY"}
           </button>
 
           {nextMatch && (
