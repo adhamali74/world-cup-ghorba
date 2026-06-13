@@ -134,8 +134,8 @@ function Landing() {
                 FORÇA PORTUGAL · BRING IT HOME
               </p>
               <p className="max-w-md mx-auto lg:mx-0 text-muted-foreground leading-relaxed">
-                Cristiano's last dance. Five brothers in exile, one trophy on the line.
-                Predict every match. Lift it together.
+                Cristiano Ronaldo — the greatest athlete the world has ever seen. Five Ballons d'Or, every league conquered,
+                every record broken. No one has earned this trophy more. 2026 is his coronation.
               </p>
             </div>
 
