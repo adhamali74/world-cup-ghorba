@@ -179,7 +179,7 @@ function MatchCard({
       toast.success("LOCKED IN 🔒", { description: "Sealed tighter than Messi's trophy case is empty. SIUUU 🐐" });
       qc.invalidateQueries({ queryKey: ["predictions"] });
     },
-    onError: (e: any) => toast.error(e?.message ?? "Could not lock prediction"),
+    onError: (e: any) => toast.error(e?.message ?? "Could not lock it in. Ronaldo would've scored already."),
   });
 
   return (
