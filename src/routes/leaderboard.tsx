@@ -1,4 +1,5 @@
 import { PlayerAvatar } from "@/components/PlayerAvatar";
+import trophyAsset from "@/assets/world-cup-trophy.webp.asset.json";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
