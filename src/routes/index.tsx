@@ -87,15 +87,15 @@ function Landing() {
       </div>
 
       <div className="relative max-w-6xl mx-auto px-6 py-8 flex flex-col min-h-screen">
-        <header className="flex items-center justify-between">
-          <div>
-            <div className="font-arabic text-2xl sm:text-3xl gold-text">الغُربة و كاس العالم</div>
+        <header className="relative flex items-center justify-center">
+          <div className="text-center">
+            <div className="font-arabic text-3xl sm:text-4xl gold-text leading-tight">الغُربة و كاس العالم</div>
             <div className="font-display tracking-[0.3em] text-xs text-muted-foreground mt-1">
               FIFA WORLD CUP · 2026
             </div>
           </div>
           {ready && slug && (
-            <Link to="/dashboard" className="text-xs font-display tracking-widest text-primary hover:text-primary-glow">
+            <Link to="/dashboard" className="absolute right-0 text-xs font-display tracking-widest text-primary hover:text-primary-glow">
               ENTER →
             </Link>
           )}
