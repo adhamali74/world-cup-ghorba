@@ -23,7 +23,10 @@ export function AppShell({ children }: { children: ReactNode }) {
   const { data: players = [] } = useQuery({
     queryKey: ["players"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("players").select("*").order("name");
+      const { data, error } = await supabase
+        .from("players")
+        .select("id, slug, name, avatar_color, is_admin")
+        .order("name");
       if (error) throw error;
       return data as Player[];
     },
