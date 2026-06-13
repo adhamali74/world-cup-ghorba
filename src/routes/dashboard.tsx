@@ -72,6 +72,24 @@ function DashboardInner() {
     },
   });
 
+  const { data: liveMatch } = useQuery({
+    queryKey: ["live-match"],
+    refetchInterval: 30_000,
+    queryFn: async () => {
+      const nowIso = new Date().toISOString();
+      const windowStart = new Date(Date.now() - 2.5 * 60 * 60 * 1000).toISOString();
+      const { data } = await supabase
+        .from("matches")
+        .select("*")
+        .lte("kickoff_at", nowIso)
+        .gte("kickoff_at", windowStart)
+        .order("kickoff_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      return data as Match | null;
+    },
+  });
+
   const { data: lastResult } = useQuery({
     queryKey: ["last-result", slug],
     enabled: !!slug,
@@ -94,9 +112,9 @@ function DashboardInner() {
 
   return (
     <div className="space-y-6">
-      {/* Matchday + countdown */}
+      {/* Matchday + countdown + next match details */}
       <section className="gold-border bg-card rounded-2xl p-5">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-3">
           <div>
             <div className="font-display text-xs tracking-[0.3em] text-muted-foreground">MATCHDAY</div>
             <div className="font-display text-2xl mt-1">
@@ -116,58 +134,62 @@ function DashboardInner() {
             </div>
           )}
         </div>
+
+        {nextMatch && (
+          <div className="mt-5 pt-5 border-t border-border/50">
+            <div className="flex items-center justify-around gap-4">
+              <div className="flex flex-col items-center gap-1 flex-1">
+                <span className="text-4xl sm:text-5xl">{nextMatch.flag_a}</span>
+                <span className="font-display tracking-wider text-sm sm:text-base">{nextMatch.team_a}</span>
+              </div>
+              <div className="flex flex-col items-center gap-1">
+                <span className="font-display text-xl sm:text-2xl text-muted-foreground">VS</span>
+                <span className="text-[10px] tracking-[0.2em] text-muted-foreground">
+                  {new Date(nextMatch.kickoff_at).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })}
+                </span>
+              </div>
+              <div className="flex flex-col items-center gap-1 flex-1">
+                <span className="text-4xl sm:text-5xl">{nextMatch.flag_b}</span>
+                <span className="font-display tracking-wider text-sm sm:text-base">{nextMatch.team_b}</span>
+              </div>
+            </div>
+            <div className="flex items-center justify-center gap-3 mt-3 text-xs text-muted-foreground">
+              {nextMatch.venue && <span>📍 {nextMatch.venue}</span>}
+              {nextMatch.stage && <span className="uppercase tracking-widest">· {nextMatch.stage}{nextMatch.group_letter ? ` ${nextMatch.group_letter}` : ""}</span>}
+            </div>
+            <div className="text-center mt-4">
+              <Link to="/matches" className="btn-hero text-base px-6 py-3 inline-block">PREDICT THIS</Link>
+            </div>
+          </div>
+        )}
       </section>
 
-      <div className="grid md:grid-cols-2 gap-6">
-        {/* Leaderboard */}
-        <section className="gold-border bg-card rounded-2xl p-5">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-display tracking-widest text-lg">LEADERBOARD</h3>
-            <Link to="/leaderboard" className="text-xs text-muted-foreground hover:text-primary">
-              VIEW ALL →
-            </Link>
-          </div>
-          <ul className="space-y-2">
-            {standings.slice(0, 4).map((p, i) => (
-              <li key={p.id} className="flex items-center justify-between py-2 px-3 rounded-lg bg-card-mid">
-                <div className="flex items-center gap-3">
-                  <span className="font-display w-6 text-center">
-                    {["🥇", "🥈", "🥉"][i] ?? `${i + 1}.`}
-                  </span>
-                  <PlayerAvatar name={p.name} color={p.avatar_color} url={p.avatar_url} size={28} />
-                  <span className="font-display tracking-wider">{p.name}</span>
-                </div>
-                <span className="font-display text-2xl gold-text tabular-nums">{p.points}</span>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        {/* Next match */}
-        <section className="gold-border bg-card rounded-2xl p-5">
-          <h3 className="font-display tracking-widest text-lg mb-3">NEXT MATCH</h3>
-          {nextMatch ? (
-            <div className="text-center">
-              <div className="flex items-center justify-around gap-4">
-                <div className="flex flex-col items-center gap-1">
-                  <span className="text-4xl">{nextMatch.flag_a}</span>
-                  <span className="font-display tracking-wider">{nextMatch.team_a}</span>
-                </div>
-                <span className="font-display text-2xl text-muted-foreground">VS</span>
-                <div className="flex flex-col items-center gap-1">
-                  <span className="text-4xl">{nextMatch.flag_b}</span>
-                  <span className="font-display tracking-wider">{nextMatch.team_b}</span>
-                </div>
+      {/* Leaderboard */}
+      <section className="gold-border bg-card rounded-2xl p-5">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="font-display tracking-widest text-lg">LEADERBOARD</h3>
+          <Link to="/leaderboard" className="text-xs text-muted-foreground hover:text-primary">
+            VIEW ALL →
+          </Link>
+        </div>
+        <ul className="space-y-2">
+          {standings.slice(0, 4).map((p, i) => (
+            <li key={p.id} className="flex items-center justify-between py-2 px-3 rounded-lg bg-card-mid">
+              <div className="flex items-center gap-3">
+                <span className="font-display w-6 text-center">
+                  {["🥇", "🥈", "🥉"][i] ?? `${i + 1}.`}
+                </span>
+                <PlayerAvatar name={p.name} color={p.avatar_color} url={p.avatar_url} size={28} />
+                <span className="font-display tracking-wider">{p.name}</span>
               </div>
-              <Link to="/matches" className="btn-hero mt-5 text-base px-6 py-3">
-                PREDICT THIS
-              </Link>
-            </div>
-          ) : (
-            <div className="text-muted-foreground">No upcoming matches.</div>
-          )}
-        </section>
-      </div>
+              <span className="font-display text-2xl gold-text tabular-nums">{p.points}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {/* Live now — under leaderboard */}
+      {liveMatch && <LiveMatchCard match={liveMatch} />}
 
       {/* Last prediction */}
       {lastResult && (
@@ -196,4 +218,67 @@ function ResultBadge({ pts }: { pts: number | null }) {
   if (pts === 3) return <span className="font-display text-correct">✅ EXACT +3</span>;
   if (pts === 1) return <span className="font-display text-partial">🟡 WINNER +1</span>;
   return <span className="font-display text-wrong">❌ 0</span>;
+}
+
+function LiveMatchCard({ match }: { match: Match }) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const ko = new Date(match.kickoff_at).getTime();
+  const elapsedMs = Math.max(0, now - ko);
+  const totalMin = Math.floor(elapsedMs / 60000);
+  // Simple football clock: 0–45' first half, 15' break, 45'+ second half, cap at 90+
+  let display: string;
+  if (totalMin < 45) display = `${totalMin}'`;
+  else if (totalMin < 60) display = "HT";
+  else if (totalMin < 60 + 45) display = `${totalMin - 15}'`;
+  else display = "FT";
+
+  const home = match.home_score ?? 0;
+  const away = match.away_score ?? 0;
+  const isLive = display !== "FT";
+
+  return (
+    <section className="relative overflow-hidden rounded-2xl p-5 bg-gradient-to-br from-card via-card to-card-mid gold-border">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <span className="text-lg">🏆</span>
+          <span className="font-display tracking-widest text-sm">FIFA WORLD CUP</span>
+        </div>
+        {isLive ? (
+          <span className="flex items-center gap-1.5 text-xs font-display tracking-widest text-red-400">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
+            </span>
+            LIVE
+          </span>
+        ) : (
+          <span className="text-xs font-display tracking-widest text-muted-foreground">FULL TIME</span>
+        )}
+      </div>
+
+      <div className="grid grid-cols-3 items-center gap-4">
+        <div className="flex flex-col items-center gap-2">
+          <span className="text-5xl">{match.flag_a}</span>
+          <span className="font-display tracking-wider text-sm">{match.team_a}</span>
+        </div>
+        <div className="flex flex-col items-center">
+          <div className="font-display text-5xl sm:text-6xl gold-text tabular-nums">
+            {home} <span className="text-muted-foreground">-</span> {away}
+          </div>
+          <div className={`mt-1 font-display text-sm tabular-nums ${isLive ? "text-red-400" : "text-muted-foreground"}`}>
+            {display}
+          </div>
+          {match.venue && <div className="mt-2 text-[10px] text-muted-foreground text-center">📍 {match.venue}</div>}
+        </div>
+        <div className="flex flex-col items-center gap-2">
+          <span className="text-5xl">{match.flag_b}</span>
+          <span className="font-display tracking-wider text-sm">{match.team_b}</span>
+        </div>
+      </div>
+    </section>
+  );
 }
