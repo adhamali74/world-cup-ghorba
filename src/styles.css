@@ -102,7 +102,7 @@
       radial-gradient(ellipse at bottom, color-mix(in oklab, var(--portugal) 5%, transparent), transparent 60%),
       url("/__l5e/assets-v1/97b77e28-6337-4fdf-916e-625b487fbdb1/ronaldo-bg.jpg");
     background-size: auto, auto, auto, cover;
-    background-position: center, center, center, center top;
+    background-position: center, center, center, center -80px;
     background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
     background-attachment: fixed;
     min-height: 100vh;
