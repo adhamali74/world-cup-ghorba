@@ -1,3 +1,4 @@
+import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -32,7 +33,7 @@ function AuthPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("players")
-        .select("id, slug, name, avatar_color, is_admin")
+        .select("id, slug, name, avatar_color, is_admin, avatar_url")
         .order("name");
       if (error) throw error;
       return data as Player[];
@@ -80,12 +81,7 @@ function AuthPage() {
                   onClick={() => setSelected(p)}
                   className="gold-border bg-card hover:bg-card-mid transition rounded-2xl p-6 flex flex-col items-center gap-3 group"
                 >
-                  <span
-                    className="w-20 h-20 rounded-full grid place-items-center font-display text-4xl group-hover:scale-105 transition"
-                    style={{ background: p.avatar_color, color: "#0A0A0C" }}
-                  >
-                    {p.name.charAt(0)}
-                  </span>
+                  <PlayerAvatar name={p.name} color={p.avatar_color} url={p.avatar_url} size={80} className="group-hover:scale-105 transition" />
                   <span className="font-display tracking-wider text-xl">{p.name}</span>
                 </button>
               ))}
@@ -96,12 +92,7 @@ function AuthPage() {
         {selected && (
           <div className="gold-border bg-card rounded-2xl p-8 space-y-5">
             <div className="flex items-center gap-4">
-              <span
-                className="w-16 h-16 rounded-full grid place-items-center font-display text-3xl"
-                style={{ background: selected.avatar_color, color: "#0A0A0C" }}
-              >
-                {selected.name.charAt(0)}
-              </span>
+              <PlayerAvatar name={selected.name} color={selected.avatar_color} url={selected.avatar_url} size={64} />
               <div className="flex-1">
                 <div className="font-display tracking-wider text-2xl">{selected.name}</div>
                 <div className="text-xs text-muted-foreground">Enter your PIN to continue</div>

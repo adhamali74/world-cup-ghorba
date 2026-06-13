@@ -1,3 +1,4 @@
+import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
@@ -39,7 +40,7 @@ function LeaderboardPage() {
     queryKey: ["board"],
     queryFn: async () => {
       const [{ data: players }, { data: preds }, { data: matches }] = await Promise.all([
-        supabase.from("players").select("id, slug, name, avatar_color, is_admin"),
+        supabase.from("players").select("id, slug, name, avatar_color, is_admin, avatar_url"),
         supabase.from("predictions").select("player_id, points_earned, match_id, predicted_home, predicted_away"),
         supabase.from("matches").select("id, team_a, team_b, flag_a, flag_b, home_score, away_score, kickoff_at"),
       ]);
@@ -91,12 +92,7 @@ function LeaderboardPage() {
                   <span className="font-display text-2xl w-8 text-center">
                     {["🥇","🥈","🥉"][i] ?? `${i+1}.`}
                   </span>
-                  <span
-                    className="w-9 h-9 rounded-full grid place-items-center font-display"
-                    style={{ background: p.avatar_color, color: "#0A0A0C" }}
-                  >
-                    {p.name.charAt(0)}
-                  </span>
+                  <PlayerAvatar name={p.name} color={p.avatar_color} url={p.avatar_url} size={36} />
                   <span className="font-display tracking-wider truncate">{p.name}</span>
                   {i === 0 && <span className="text-lg">👑</span>}
                 </div>

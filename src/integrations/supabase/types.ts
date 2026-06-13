@@ -65,6 +65,7 @@ export type Database = {
       players: {
         Row: {
           avatar_color: string
+          avatar_url: string | null
           created_at: string
           id: string
           is_admin: boolean
@@ -74,6 +75,7 @@ export type Database = {
         }
         Insert: {
           avatar_color?: string
+          avatar_url?: string | null
           created_at?: string
           id?: string
           is_admin?: boolean
@@ -83,6 +85,7 @@ export type Database = {
         }
         Update: {
           avatar_color?: string
+          avatar_url?: string | null
           created_at?: string
           id?: string
           is_admin?: boolean

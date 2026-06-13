@@ -1,3 +1,4 @@
+import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -35,7 +36,7 @@ function Profile() {
     queryFn: async () => {
       const { data } = await supabase
         .from("players")
-        .select("id, slug, name, avatar_color, is_admin")
+        .select("id, slug, name, avatar_color, is_admin, avatar_url")
         .eq("slug", slug!)
         .maybeSingle();
       return data as Player | null;
@@ -79,12 +80,7 @@ function Profile() {
   return (
     <div className="max-w-md mx-auto space-y-6">
       <div className="gold-border bg-card rounded-2xl p-6 flex items-center gap-4">
-        <span
-          className="w-16 h-16 rounded-full grid place-items-center font-display text-3xl"
-          style={{ background: me.avatar_color, color: "#0A0A0C" }}
-        >
-          {me.name.charAt(0)}
-        </span>
+        <PlayerAvatar name={me.name} color={me.avatar_color} url={me.avatar_url} size={64} />
         <div className="flex-1 min-w-0">
           <div className="font-display tracking-wider text-2xl truncate">{me.name}</div>
           <div className="text-xs text-muted-foreground">@{me.slug}{me.is_admin && " · ADMIN"}</div>
