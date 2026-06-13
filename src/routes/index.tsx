@@ -90,7 +90,7 @@ function Landing() {
             <img
               src={trophyAsset.url}
               alt="FIFA World Cup 2026 Trophy"
-              className="relative w-[78%] sm:w-[70%] max-w-[480px] drop-shadow-[0_20px_60px_rgba(212,175,55,0.45)] [animation:trophy-float_6s_ease-in-out_infinite] mix-blend-screen"
+              className="relative w-[78%] sm:w-[70%] max-w-[480px] drop-shadow-[0_20px_60px_rgba(212,175,55,0.45)] [animation:trophy-float_6s_ease-in-out_infinite]"
               loading="eager"
             />
           </div>
