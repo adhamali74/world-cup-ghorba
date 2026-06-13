@@ -261,7 +261,7 @@ function LiveMatchCard({ match }: { match: LiveMatchData }) {
     <section className="relative overflow-hidden rounded-2xl p-5 bg-gradient-to-br from-card via-card to-card-mid gold-border">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <span className="text-lg">🏆</span>
+          <img src={trophyAsset.url} alt="" className="h-6 w-6 object-contain" />
           <span className="font-display tracking-widest text-sm">{match.competition.toUpperCase()}</span>
         </div>
         {statusBadge}
