@@ -63,7 +63,7 @@ function Profile() {
     setBusy(true);
     try {
       await changeFn({ data: { slug, oldPin, newPin } });
-      toast.success("PIN updated");
+      toast.success("PIN updated 🔐", { description: "Stronger than the Argentine defense in 2018." });
       setOldPin(""); setNewPin(""); setConfirmPin("");
     } catch (e: any) {
       toast.error(e?.message ?? "Failed");
