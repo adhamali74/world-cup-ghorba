@@ -1,11 +1,13 @@
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { supabase } from "@/integrations/supabase/client";
 import { usePlayer } from "@/hooks/usePlayer";
 import type { Match, Player, Prediction } from "@/lib/types";
+import { getLiveMatch, type LiveMatchData } from "@/lib/api/live-match.functions";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -72,22 +74,11 @@ function DashboardInner() {
     },
   });
 
+  const liveFn = useServerFn(getLiveMatch);
   const { data: liveMatch } = useQuery({
-    queryKey: ["live-match"],
+    queryKey: ["espn-live-match"],
+    queryFn: () => liveFn(),
     refetchInterval: 30_000,
-    queryFn: async () => {
-      const nowIso = new Date().toISOString();
-      const windowStart = new Date(Date.now() - 2.5 * 60 * 60 * 1000).toISOString();
-      const { data } = await supabase
-        .from("matches")
-        .select("*")
-        .lte("kickoff_at", nowIso)
-        .gte("kickoff_at", windowStart)
-        .order("kickoff_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      return data as Match | null;
-    },
   });
 
   const { data: lastResult } = useQuery({
@@ -220,63 +211,62 @@ function ResultBadge({ pts }: { pts: number | null }) {
   return <span className="font-display text-wrong">❌ 0</span>;
 }
 
-function LiveMatchCard({ match }: { match: Match }) {
-  const [now, setNow] = useState(() => Date.now());
-  useEffect(() => {
-    const id = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(id);
-  }, []);
-  const ko = new Date(match.kickoff_at).getTime();
-  const elapsedMs = Math.max(0, now - ko);
-  const totalMin = Math.floor(elapsedMs / 60000);
-  // Simple football clock: 0–45' first half, 15' break, 45'+ second half, cap at 90+
-  let display: string;
-  if (totalMin < 45) display = `${totalMin}'`;
-  else if (totalMin < 60) display = "HT";
-  else if (totalMin < 60 + 45) display = `${totalMin - 15}'`;
-  else display = "FT";
+function LiveMatchCard({ match }: { match: LiveMatchData }) {
+  const isLive = match.state === "in";
+  const isPre = match.state === "pre";
+  const isPost = match.state === "post";
 
-  const home = match.home_score ?? 0;
-  const away = match.away_score ?? 0;
-  const isLive = display !== "FT";
+  const statusBadge = isLive ? (
+    <span className="flex items-center gap-1.5 text-xs font-display tracking-widest text-red-400">
+      <span className="relative flex h-2 w-2">
+        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+        <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
+      </span>
+      LIVE
+    </span>
+  ) : isPost ? (
+    <span className="text-xs font-display tracking-widest text-muted-foreground">FULL TIME</span>
+  ) : (
+    <span className="text-xs font-display tracking-widest text-muted-foreground">UPCOMING</span>
+  );
+
+  const clockLine = isLive
+    ? match.clock || `${match.statusText}`
+    : isPre
+      ? new Date(match.kickoff).toLocaleString(undefined, { weekday: "short", hour: "2-digit", minute: "2-digit" })
+      : "FT";
 
   return (
     <section className="relative overflow-hidden rounded-2xl p-5 bg-gradient-to-br from-card via-card to-card-mid gold-border">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <span className="text-lg">🏆</span>
-          <span className="font-display tracking-widest text-sm">FIFA WORLD CUP</span>
+          <span className="font-display tracking-widest text-sm">{match.competition.toUpperCase()}</span>
         </div>
-        {isLive ? (
-          <span className="flex items-center gap-1.5 text-xs font-display tracking-widest text-red-400">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
-            </span>
-            LIVE
-          </span>
-        ) : (
-          <span className="text-xs font-display tracking-widest text-muted-foreground">FULL TIME</span>
-        )}
+        {statusBadge}
       </div>
 
       <div className="grid grid-cols-3 items-center gap-4">
         <div className="flex flex-col items-center gap-2">
-          <span className="text-5xl">{match.flag_a}</span>
-          <span className="font-display tracking-wider text-sm">{match.team_a}</span>
+          <img src={match.home.logo} alt={match.home.name} className="w-14 h-14 object-contain" loading="lazy" />
+          <span className="font-display tracking-wider text-sm text-center">{match.home.name}</span>
         </div>
         <div className="flex flex-col items-center">
           <div className="font-display text-5xl sm:text-6xl gold-text tabular-nums">
-            {home} <span className="text-muted-foreground">-</span> {away}
+            {isPre ? "vs" : (
+              <>
+                {match.home.score} <span className="text-muted-foreground">-</span> {match.away.score}
+              </>
+            )}
           </div>
           <div className={`mt-1 font-display text-sm tabular-nums ${isLive ? "text-red-400" : "text-muted-foreground"}`}>
-            {display}
+            {clockLine}
           </div>
           {match.venue && <div className="mt-2 text-[10px] text-muted-foreground text-center">📍 {match.venue}</div>}
         </div>
         <div className="flex flex-col items-center gap-2">
-          <span className="text-5xl">{match.flag_b}</span>
-          <span className="font-display tracking-wider text-sm">{match.team_b}</span>
+          <img src={match.away.logo} alt={match.away.name} className="w-14 h-14 object-contain" loading="lazy" />
+          <span className="font-display tracking-wider text-sm text-center">{match.away.name}</span>
         </div>
       </div>
     </section>
