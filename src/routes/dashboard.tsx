@@ -167,56 +167,29 @@ function DashboardInner() {
       {/* Live now */}
       {liveMatch && <LiveMatchCard match={liveMatch} />}
 
-      <div className="grid md:grid-cols-2 gap-6">
-        {/* Leaderboard */}
-        <section className="gold-border bg-card rounded-2xl p-5">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-display tracking-widest text-lg">LEADERBOARD</h3>
-            <Link to="/leaderboard" className="text-xs text-muted-foreground hover:text-primary">
-              VIEW ALL →
-            </Link>
-          </div>
-          <ul className="space-y-2">
-            {standings.slice(0, 4).map((p, i) => (
-              <li key={p.id} className="flex items-center justify-between py-2 px-3 rounded-lg bg-card-mid">
-                <div className="flex items-center gap-3">
-                  <span className="font-display w-6 text-center">
-                    {["🥇", "🥈", "🥉"][i] ?? `${i + 1}.`}
-                  </span>
-                  <PlayerAvatar name={p.name} color={p.avatar_color} url={p.avatar_url} size={28} />
-                  <span className="font-display tracking-wider">{p.name}</span>
-                </div>
-                <span className="font-display text-2xl gold-text tabular-nums">{p.points}</span>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        {/* Next match */}
-        <section className="gold-border bg-card rounded-2xl p-5">
-          <h3 className="font-display tracking-widest text-lg mb-3">NEXT MATCH</h3>
-          {nextMatch ? (
-            <div className="text-center">
-              <div className="flex items-center justify-around gap-4">
-                <div className="flex flex-col items-center gap-1">
-                  <span className="text-4xl">{nextMatch.flag_a}</span>
-                  <span className="font-display tracking-wider">{nextMatch.team_a}</span>
-                </div>
-                <span className="font-display text-2xl text-muted-foreground">VS</span>
-                <div className="flex flex-col items-center gap-1">
-                  <span className="text-4xl">{nextMatch.flag_b}</span>
-                  <span className="font-display tracking-wider">{nextMatch.team_b}</span>
-                </div>
+      {/* Leaderboard */}
+      <section className="gold-border bg-card rounded-2xl p-5">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="font-display tracking-widest text-lg">LEADERBOARD</h3>
+          <Link to="/leaderboard" className="text-xs text-muted-foreground hover:text-primary">
+            VIEW ALL →
+          </Link>
+        </div>
+        <ul className="space-y-2">
+          {standings.slice(0, 4).map((p, i) => (
+            <li key={p.id} className="flex items-center justify-between py-2 px-3 rounded-lg bg-card-mid">
+              <div className="flex items-center gap-3">
+                <span className="font-display w-6 text-center">
+                  {["🥇", "🥈", "🥉"][i] ?? `${i + 1}.`}
+                </span>
+                <PlayerAvatar name={p.name} color={p.avatar_color} url={p.avatar_url} size={28} />
+                <span className="font-display tracking-wider">{p.name}</span>
               </div>
-              <Link to="/matches" className="btn-hero mt-5 text-base px-6 py-3">
-                PREDICT THIS
-              </Link>
-            </div>
-          ) : (
-            <div className="text-muted-foreground">No upcoming matches.</div>
-          )}
-        </section>
-      </div>
+              <span className="font-display text-2xl gold-text tabular-nums">{p.points}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       {/* Last prediction */}
       {lastResult && (
