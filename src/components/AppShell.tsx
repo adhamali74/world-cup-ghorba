@@ -5,13 +5,14 @@ import { useEffect, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { usePlayer } from "@/hooks/usePlayer";
 import type { Player } from "@/lib/types";
+import trophyAsset from "@/assets/world-cup-trophy.webp.asset.json";
 
 const NAV = [
-  { to: "/dashboard", label: "Home", icon: "⚽" },
-  { to: "/matches", label: "Matches", icon: "📋" },
-  { to: "/leaderboard", label: "Board", icon: "🏆" },
-  { to: "/cr7", label: "CR7", icon: "👑" },
-  { to: "/profile", label: "Profile", icon: "👤" },
+  { to: "/dashboard", label: "Home", icon: "⚽", iconUrl: null as string | null },
+  { to: "/matches", label: "Matches", icon: "📋", iconUrl: null },
+  { to: "/leaderboard", label: "Board", icon: "", iconUrl: trophyAsset.url },
+  { to: "/cr7", label: "CR7", icon: "👑", iconUrl: null },
+  { to: "/profile", label: "Profile", icon: "👤", iconUrl: null },
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -76,7 +77,11 @@ export function AppShell({ children }: { children: ReactNode }) {
                     active ? "text-primary" : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  <span className="text-lg">{n.icon}</span>
+                  {n.iconUrl ? (
+                    <img src={n.iconUrl} alt="" className="h-6 w-6 object-contain" />
+                  ) : (
+                    <span className="text-lg">{n.icon}</span>
+                  )}
                   {n.label}
                 </Link>
               );
