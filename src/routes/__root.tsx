@@ -42,7 +42,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
       <div className="max-w-md text-center">
         <h1 className="font-display text-2xl gold-text">VAR check failed</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Something broke. Try again or go home.
+          Something broke. Don't worry — Messi misses penalties too. Try again.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button

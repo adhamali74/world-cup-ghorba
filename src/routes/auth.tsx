@@ -74,7 +74,7 @@ function AuthPage() {
               Then enter your PIN. First time logging in? Your PIN is set on first entry.
             </p>
             <div className="mt-10 grid grid-cols-2 sm:grid-cols-2 gap-4">
-              {isLoading && <div className="col-span-2 text-center text-muted-foreground">Loading players…</div>}
+              {isLoading && <div className="col-span-2 text-center text-muted-foreground">Lining up the squad… (no Messi, sorry)</div>}
               {players.map((p) => (
                 <button
                   key={p.id}

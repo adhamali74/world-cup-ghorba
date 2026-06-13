@@ -134,7 +134,7 @@ function MatchesPage() {
           />
         ))}
         {filtered.length === 0 && (
-          <div className="text-muted-foreground text-center py-12">No matches today in this stage.</div>
+          <div className="text-muted-foreground text-center py-12">No matches today. Even Ronaldo took a rest day (only one in his life).</div>
         )}
       </div>
     </div>
@@ -176,10 +176,10 @@ function MatchCard({
   const mut = useMutation({
     mutationFn: () => lockFn({ data: { player_slug: me!.slug, match_id: match.id, home, away } }),
     onSuccess: () => {
-      toast.success("LOCKED IN 🔒", { description: "Good luck out there." });
+      toast.success("LOCKED IN 🔒", { description: "Sealed tighter than Messi's trophy case is empty. SIUUU 🐐" });
       qc.invalidateQueries({ queryKey: ["predictions"] });
     },
-    onError: (e: any) => toast.error(e?.message ?? "Could not lock prediction"),
+    onError: (e: any) => toast.error(e?.message ?? "Could not lock it in. Ronaldo would've scored already."),
   });
 
   return (
