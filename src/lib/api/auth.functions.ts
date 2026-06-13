@@ -92,6 +92,9 @@ export const adminClearPin = createServerFn({ method: "POST" })
       .eq("slug", data.slug);
     if (error) throw new Error(error.message);
     return { ok: true };
+  });
+
+
 
 const ChangePinSchema = z.object({
   slug: z.string().min(1).max(64),
