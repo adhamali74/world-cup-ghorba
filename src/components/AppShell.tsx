@@ -17,7 +17,7 @@ const NAV = [
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const { slug, ready, choose, clear } = usePlayer();
+  const { slug, ready, choose } = usePlayer();
   const loc = useLocation();
 
   const { data: players = [] } = useQuery({
@@ -46,8 +46,8 @@ export function AppShell({ children }: { children: ReactNode }) {
             </span>
           </Link>
           {me && (
-            <button
-              onClick={clear}
+            <Link
+              to="/profile"
               className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition"
             >
               <span
@@ -57,7 +57,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 {me.name.charAt(0)}
               </span>
               <span className="font-display tracking-wider">{me.name}</span>
-            </button>
+            </Link>
           )}
         </div>
       </header>
