@@ -125,7 +125,7 @@ function AuthPage() {
               </button>
             </div>
             <p className="text-center text-xs text-muted-foreground">
-              Forgot your PIN? Ask the admin to reset it.
+              Forgot your PIN? Pray for Ronaldo to lift the cup 🙏🐐 — and maybe it'll come back to you.
             </p>
           </div>
         )}
