@@ -1,3 +1,4 @@
+import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, type ReactNode } from "react";
