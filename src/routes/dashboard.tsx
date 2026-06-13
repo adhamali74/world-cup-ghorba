@@ -106,7 +106,7 @@ function DashboardInner() {
     <div className="space-y-6">
       {/* Matchday + countdown + next match details */}
       <section className="gold-border bg-card rounded-2xl p-5">
-        <div className="flex items-center justify-between flex-wrap gap-3">
+        <div className="relative grid grid-cols-[1fr_auto_1fr] items-center gap-3">
           <div>
             <div className="font-display text-xs tracking-[0.3em] text-muted-foreground">MATCHDAY</div>
             <div className="font-display text-2xl mt-1">
@@ -120,16 +120,16 @@ function DashboardInner() {
           <img
             src={trophyAsset.url}
             alt="FIFA World Cup trophy"
-            className="hidden sm:block h-20 w-auto drop-shadow-[0_6px_20px_rgba(250,204,21,0.4)] [animation:trophy-float_6s_ease-in-out_infinite]"
+            className="hidden sm:block h-24 w-auto justify-self-center drop-shadow-[0_6px_20px_rgba(250,204,21,0.4)] [animation:trophy-float_6s_ease-in-out_infinite]"
           />
-          {cd && (
-            <div className="text-right">
+          {cd ? (
+            <div className="text-right justify-self-end">
               <div className="font-display text-xs tracking-[0.3em] text-muted-foreground">KICKOFF IN</div>
               <div className="font-display text-2xl sm:text-4xl gold-text mt-1 tabular-nums">
                 {String(cd.d).padStart(2, "0")}:{String(cd.h).padStart(2, "0")}:{String(cd.m).padStart(2, "0")}:{String(cd.s).padStart(2, "0")}
               </div>
             </div>
-          )}
+          ) : <div />}
         </div>
 
         {nextMatch && (
