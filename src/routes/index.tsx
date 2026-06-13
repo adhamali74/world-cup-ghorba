@@ -51,12 +51,11 @@ function Landing() {
   });
 
   const { data: nextMatch } = useQuery({
-    queryKey: ["next-portugal"],
+    queryKey: ["next-match"],
     queryFn: async () => {
       const { data } = await supabase
         .from("matches")
         .select("*")
-        .or("team_a.eq.Portugal,team_b.eq.Portugal")
         .gte("kickoff_at", new Date().toISOString())
         .order("kickoff_at")
         .limit(1)
@@ -64,6 +63,9 @@ function Landing() {
       return data as Match | null;
     },
   });
+
+  const countdown = useCountdown(nextMatch?.kickoff_at);
+
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-background">
