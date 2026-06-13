@@ -219,3 +219,66 @@ function ResultBadge({ pts }: { pts: number | null }) {
   if (pts === 1) return <span className="font-display text-partial">🟡 WINNER +1</span>;
   return <span className="font-display text-wrong">❌ 0</span>;
 }
+
+function LiveMatchCard({ match }: { match: Match }) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const ko = new Date(match.kickoff_at).getTime();
+  const elapsedMs = Math.max(0, now - ko);
+  const totalMin = Math.floor(elapsedMs / 60000);
+  // Simple football clock: 0–45' first half, 15' break, 45'+ second half, cap at 90+
+  let display: string;
+  if (totalMin < 45) display = `${totalMin}'`;
+  else if (totalMin < 60) display = "HT";
+  else if (totalMin < 60 + 45) display = `${totalMin - 15}'`;
+  else display = "FT";
+
+  const home = match.home_score ?? 0;
+  const away = match.away_score ?? 0;
+  const isLive = display !== "FT";
+
+  return (
+    <section className="relative overflow-hidden rounded-2xl p-5 bg-gradient-to-br from-card via-card to-card-mid gold-border">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <span className="text-lg">🏆</span>
+          <span className="font-display tracking-widest text-sm">FIFA WORLD CUP</span>
+        </div>
+        {isLive ? (
+          <span className="flex items-center gap-1.5 text-xs font-display tracking-widest text-red-400">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
+            </span>
+            LIVE
+          </span>
+        ) : (
+          <span className="text-xs font-display tracking-widest text-muted-foreground">FULL TIME</span>
+        )}
+      </div>
+
+      <div className="grid grid-cols-3 items-center gap-4">
+        <div className="flex flex-col items-center gap-2">
+          <span className="text-5xl">{match.flag_a}</span>
+          <span className="font-display tracking-wider text-sm">{match.team_a}</span>
+        </div>
+        <div className="flex flex-col items-center">
+          <div className="font-display text-5xl sm:text-6xl gold-text tabular-nums">
+            {home} <span className="text-muted-foreground">-</span> {away}
+          </div>
+          <div className={`mt-1 font-display text-sm tabular-nums ${isLive ? "text-red-400" : "text-muted-foreground"}`}>
+            {display}
+          </div>
+          {match.venue && <div className="mt-2 text-[10px] text-muted-foreground text-center">📍 {match.venue}</div>}
+        </div>
+        <div className="flex flex-col items-center gap-2">
+          <span className="text-5xl">{match.flag_b}</span>
+          <span className="font-display tracking-wider text-sm">{match.team_b}</span>
+        </div>
+      </div>
+    </section>
+  );
+}
