@@ -17,7 +17,7 @@ const NAV = [
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const { slug, ready, choose, clear } = usePlayer();
+  const { slug, ready, choose } = usePlayer();
   const loc = useLocation();
 
   const { data: players = [] } = useQuery({
