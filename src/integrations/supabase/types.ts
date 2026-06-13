@@ -69,6 +69,7 @@ export type Database = {
           id: string
           is_admin: boolean
           name: string
+          pin_hash: string | null
           slug: string
         }
         Insert: {
@@ -77,6 +78,7 @@ export type Database = {
           id?: string
           is_admin?: boolean
           name: string
+          pin_hash?: string | null
           slug: string
         }
         Update: {
@@ -85,6 +87,7 @@ export type Database = {
           id?: string
           is_admin?: boolean
           name?: string
+          pin_hash?: string | null
           slug?: string
         }
         Relationships: []
