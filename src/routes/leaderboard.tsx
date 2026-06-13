@@ -1,4 +1,5 @@
 import { PlayerAvatar } from "@/components/PlayerAvatar";
+import trophyAsset from "@/assets/world-cup-trophy.webp.asset.json";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
@@ -76,7 +77,11 @@ function LeaderboardPage() {
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <div className="text-6xl mb-2">🏆</div>
+        <img
+          src={trophyAsset.url}
+          alt="FIFA World Cup trophy"
+          className="mx-auto mb-3 h-32 w-auto drop-shadow-[0_8px_24px_rgba(250,204,21,0.45)]"
+        />
         <h1 className="font-display text-5xl gold-text">LEADERBOARD</h1>
         <p className="font-arabic text-muted-foreground mt-1">الغُربة و كاس العالم · 2026</p>
       </div>
