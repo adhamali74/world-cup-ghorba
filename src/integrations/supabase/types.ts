@@ -14,13 +14,135 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      matches: {
+        Row: {
+          away_score: number | null
+          created_at: string
+          flag_a: string | null
+          flag_b: string | null
+          group_letter: string | null
+          home_score: number | null
+          id: string
+          kickoff_at: string
+          match_no: number | null
+          stage: string
+          team_a: string
+          team_b: string
+          venue: string | null
+        }
+        Insert: {
+          away_score?: number | null
+          created_at?: string
+          flag_a?: string | null
+          flag_b?: string | null
+          group_letter?: string | null
+          home_score?: number | null
+          id?: string
+          kickoff_at: string
+          match_no?: number | null
+          stage?: string
+          team_a: string
+          team_b: string
+          venue?: string | null
+        }
+        Update: {
+          away_score?: number | null
+          created_at?: string
+          flag_a?: string | null
+          flag_b?: string | null
+          group_letter?: string | null
+          home_score?: number | null
+          id?: string
+          kickoff_at?: string
+          match_no?: number | null
+          stage?: string
+          team_a?: string
+          team_b?: string
+          venue?: string | null
+        }
+        Relationships: []
+      }
+      players: {
+        Row: {
+          avatar_color: string
+          created_at: string
+          id: string
+          is_admin: boolean
+          name: string
+          slug: string
+        }
+        Insert: {
+          avatar_color?: string
+          created_at?: string
+          id?: string
+          is_admin?: boolean
+          name: string
+          slug: string
+        }
+        Update: {
+          avatar_color?: string
+          created_at?: string
+          id?: string
+          is_admin?: boolean
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
+      predictions: {
+        Row: {
+          id: string
+          locked_at: string
+          match_id: string
+          player_id: string
+          points_earned: number | null
+          predicted_away: number
+          predicted_home: number
+        }
+        Insert: {
+          id?: string
+          locked_at?: string
+          match_id: string
+          player_id: string
+          points_earned?: number | null
+          predicted_away: number
+          predicted_home: number
+        }
+        Update: {
+          id?: string
+          locked_at?: string
+          match_id?: string
+          player_id?: string
+          points_earned?: number | null
+          predicted_away?: number
+          predicted_home?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "predictions_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "predictions_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      calculate_points: {
+        Args: { aa: number; ah: number; pa: number; ph: number }
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never
