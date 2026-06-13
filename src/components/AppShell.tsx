@@ -59,7 +59,6 @@ export function AppShell({ children }: { children: ReactNode }) {
               <span className="font-display tracking-wider">{me.name}</span>
             </Link>
           )}
-          )}
         </div>
       </header>
 
