@@ -39,7 +39,7 @@ function LeaderboardPage() {
     queryKey: ["board"],
     queryFn: async () => {
       const [{ data: players }, { data: preds }, { data: matches }] = await Promise.all([
-        supabase.from("players").select("*"),
+        supabase.from("players").select("id, slug, name, avatar_color, is_admin"),
         supabase.from("predictions").select("player_id, points_earned, match_id, predicted_home, predicted_away"),
         supabase.from("matches").select("id, team_a, team_b, flag_a, flag_b, home_score, away_score, kickoff_at"),
       ]);

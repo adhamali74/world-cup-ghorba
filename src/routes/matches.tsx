@@ -42,7 +42,7 @@ function MatchesPage() {
     queryKey: ["me", slug],
     enabled: !!slug,
     queryFn: async () => {
-      const { data } = await supabase.from("players").select("*").eq("slug", slug!).maybeSingle();
+      const { data } = await supabase.from("players").select("id, slug, name, avatar_color, is_admin").eq("slug", slug!).maybeSingle();
       return data as Player | null;
     },
   });
@@ -67,7 +67,7 @@ function MatchesPage() {
   const { data: players = [] } = useQuery({
     queryKey: ["players"],
     queryFn: async () => {
-      const { data } = await supabase.from("players").select("*");
+      const { data } = await supabase.from("players").select("id, slug, name, avatar_color, is_admin");
       return (data ?? []) as Player[];
     },
   });
