@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { usePlayer } from "@/hooks/usePlayer";
 import type { Player, Match } from "@/lib/types";
+import trophyAsset from "@/assets/wc26-trophy.png.asset.json";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
