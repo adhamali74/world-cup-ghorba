@@ -44,7 +44,7 @@ function Profile() {
   });
 
   if (!slug || !me) {
-    return <div className="text-muted-foreground">Loading…</div>;
+    return <div className="text-muted-foreground">Loading… faster than Messi running back on defense.</div>;
   }
 
   const submit = async () => {
