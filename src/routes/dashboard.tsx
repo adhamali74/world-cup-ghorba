@@ -112,9 +112,9 @@ function DashboardInner() {
 
   return (
     <div className="space-y-6">
-      {/* Matchday + countdown */}
+      {/* Matchday + countdown + next match details */}
       <section className="gold-border bg-card rounded-2xl p-5">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-3">
           <div>
             <div className="font-display text-xs tracking-[0.3em] text-muted-foreground">MATCHDAY</div>
             <div className="font-display text-2xl mt-1">
@@ -134,7 +134,38 @@ function DashboardInner() {
             </div>
           )}
         </div>
+
+        {nextMatch && (
+          <div className="mt-5 pt-5 border-t border-border/50">
+            <div className="flex items-center justify-around gap-4">
+              <div className="flex flex-col items-center gap-1 flex-1">
+                <span className="text-4xl sm:text-5xl">{nextMatch.flag_a}</span>
+                <span className="font-display tracking-wider text-sm sm:text-base">{nextMatch.team_a}</span>
+              </div>
+              <div className="flex flex-col items-center gap-1">
+                <span className="font-display text-xl sm:text-2xl text-muted-foreground">VS</span>
+                <span className="text-[10px] tracking-[0.2em] text-muted-foreground">
+                  {new Date(nextMatch.kickoff_at).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })}
+                </span>
+              </div>
+              <div className="flex flex-col items-center gap-1 flex-1">
+                <span className="text-4xl sm:text-5xl">{nextMatch.flag_b}</span>
+                <span className="font-display tracking-wider text-sm sm:text-base">{nextMatch.team_b}</span>
+              </div>
+            </div>
+            <div className="flex items-center justify-center gap-3 mt-3 text-xs text-muted-foreground">
+              {nextMatch.venue && <span>📍 {nextMatch.venue}</span>}
+              {nextMatch.stage && <span className="uppercase tracking-widest">· {nextMatch.stage}{nextMatch.group_letter ? ` ${nextMatch.group_letter}` : ""}</span>}
+            </div>
+            <div className="text-center mt-4">
+              <Link to="/matches" className="btn-hero text-base px-6 py-3 inline-block">PREDICT THIS</Link>
+            </div>
+          </div>
+        )}
       </section>
+
+      {/* Live now */}
+      {liveMatch && <LiveMatchCard match={liveMatch} />}
 
       <div className="grid md:grid-cols-2 gap-6">
         {/* Leaderboard */}
