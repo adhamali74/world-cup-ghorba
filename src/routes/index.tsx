@@ -138,7 +138,7 @@ function Landing() {
                 every record broken. No one has earned this trophy more. 2026 is his coronation.
               </p>
               <p className="max-w-md mx-auto lg:mx-0 text-xs italic text-muted-foreground/80 border-l-2 border-primary/40 pl-3">
-                ⚠️ Disclaimer: if Ronaldo doesn't lift the trophy in 2026, this website will self-destruct and shut down automatically.
+                ⚠️ Disclaimer: if Ronaldo doesn't lift this cup, this website will self-destruct and shut down automatically.
               </p>
             </div>
 
