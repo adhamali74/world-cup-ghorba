@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { usePlayer } from "@/hooks/usePlayer";
 import type { Player, Match } from "@/lib/types";
-import trophyAsset from "@/assets/wc26-trophy.png.asset.json";
+import trophyAsset from "@/assets/trophy-hero.png";
 
 
 export const Route = createFileRoute("/")({
@@ -88,7 +88,7 @@ function Landing() {
             {/* Ground shadow */}
             <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-3/4 h-6 rounded-[100%] bg-black/70 blur-xl" />
             <img
-              src={trophyAsset.url}
+              src={trophyAsset}
               alt="FIFA World Cup 2026 Trophy"
               className="relative w-[78%] sm:w-[70%] max-w-[480px] drop-shadow-[0_20px_60px_rgba(212,175,55,0.45)] [animation:trophy-float_6s_ease-in-out_infinite]"
               loading="eager"
