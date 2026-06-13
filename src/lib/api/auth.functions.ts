@@ -92,4 +92,35 @@ export const adminClearPin = createServerFn({ method: "POST" })
       .eq("slug", data.slug);
     if (error) throw new Error(error.message);
     return { ok: true };
+
+const ChangePinSchema = z.object({
+  slug: z.string().min(1).max(64),
+  oldPin: PinSchema,
+  newPin: PinSchema,
+});
+
+export const changePin = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => ChangePinSchema.parse(d))
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: player, error } = await supabaseAdmin
+      .from("players")
+      .select("id, pin_hash")
+      .eq("slug", data.slug)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!player) throw new Error("Player not found");
+    if (!player.pin_hash) throw new Error("PIN not set yet");
+
+    const oldHash = await hashPin(data.oldPin);
+    if (!safeEq(player.pin_hash, oldHash)) throw new Error("Current PIN is wrong");
+
+    const newHash = await hashPin(data.newPin);
+    const { error: uErr } = await supabaseAdmin
+      .from("players")
+      .update({ pin_hash: newHash })
+      .eq("id", player.id);
+    if (uErr) throw new Error(uErr.message);
+    return { ok: true };
   });
+
