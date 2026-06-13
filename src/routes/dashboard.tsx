@@ -163,19 +163,39 @@ function DashboardInner() {
             VIEW ALL →
           </Link>
         </div>
-        <ul className="space-y-2">
-          {standings.slice(0, 4).map((p, i) => (
-            <li key={p.id} className="flex items-center justify-between py-2 px-3 rounded-lg bg-card-mid">
-              <div className="flex items-center gap-3">
-                <span className="font-display w-6 text-center">
-                  {["🥇", "🥈", "🥉"][i] ?? `${i + 1}.`}
+        <ul className="space-y-3">
+          {standings.slice(0, 4).map((p, i) => {
+            const medal = ["🥇", "🥈", "🥉"][i];
+            const ringClass =
+              i === 0
+                ? "ring-2 ring-yellow-400 shadow-[0_0_20px_rgba(250,204,21,0.35)]"
+                : i === 1
+                ? "ring-2 ring-slate-300 shadow-[0_0_16px_rgba(203,213,225,0.25)]"
+                : i === 2
+                ? "ring-2 ring-amber-600 shadow-[0_0_16px_rgba(217,119,6,0.25)]"
+                : "ring-1 ring-border";
+            return (
+              <li
+                key={p.id}
+                className="flex items-center justify-between py-3 px-4 rounded-xl bg-card-mid hover:bg-card-mid/80 transition-colors"
+              >
+                <div className="flex items-center gap-4 min-w-0">
+                  <span className="font-display text-lg w-8 text-center shrink-0">
+                    {medal ?? `${i + 1}.`}
+                  </span>
+                  <div className={`relative rounded-full ${ringClass}`}>
+                    <PlayerAvatar name={p.name} color={p.avatar_color} url={p.avatar_url} size={56} />
+                  </div>
+                  <span className="font-display tracking-wider text-base sm:text-lg truncate">
+                    {p.name}
+                  </span>
+                </div>
+                <span className="font-display text-2xl sm:text-3xl gold-text tabular-nums shrink-0">
+                  {p.points}
                 </span>
-                <PlayerAvatar name={p.name} color={p.avatar_color} url={p.avatar_url} size={28} />
-                <span className="font-display tracking-wider">{p.name}</span>
-              </div>
-              <span className="font-display text-2xl gold-text tabular-nums">{p.points}</span>
-            </li>
-          ))}
+              </li>
+            );
+          })}
         </ul>
       </section>
 
