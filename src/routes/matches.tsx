@@ -87,7 +87,21 @@ function MatchesPage() {
   }, [qc]);
 
   const [stage, setStage] = useState<string>("group");
-  const filtered = useMemo(() => matches.filter((m) => m.stage === stage), [matches, stage]);
+  const filtered = useMemo(() => {
+    const inStage = matches.filter((m) => m.stage === stage);
+    const now = Date.now();
+    const isFinished = (m: Match) => m.home_score != null && m.away_score != null;
+    const live = inStage
+      .filter((m) => new Date(m.kickoff_at).getTime() <= now && !isFinished(m))
+      .sort((a, b) => +new Date(b.kickoff_at) - +new Date(a.kickoff_at));
+    const upcoming = inStage
+      .filter((m) => new Date(m.kickoff_at).getTime() > now)
+      .sort((a, b) => +new Date(a.kickoff_at) - +new Date(b.kickoff_at));
+    const finished = inStage
+      .filter(isFinished)
+      .sort((a, b) => +new Date(b.kickoff_at) - +new Date(a.kickoff_at));
+    return [...live, ...upcoming, ...finished];
+  }, [matches, stage]);
 
   return (
     <div className="space-y-5">
