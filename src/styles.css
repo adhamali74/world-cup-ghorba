@@ -97,8 +97,13 @@
   body {
     font-family: var(--font-body);
     background-image:
+      linear-gradient(color-mix(in oklab, var(--color-background) 72%, transparent), color-mix(in oklab, var(--color-background) 78%, transparent)),
       radial-gradient(ellipse at top, color-mix(in oklab, var(--primary) 7%, transparent), transparent 60%),
-      radial-gradient(ellipse at bottom, color-mix(in oklab, var(--portugal) 5%, transparent), transparent 60%);
+      radial-gradient(ellipse at bottom, color-mix(in oklab, var(--portugal) 5%, transparent), transparent 60%),
+      url("/__l5e/assets-v1/97b77e28-6337-4fdf-916e-625b487fbdb1/ronaldo-bg.jpg");
+    background-size: auto, auto, auto, cover;
+    background-position: center, center, center, center;
+    background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
     background-attachment: fixed;
     min-height: 100vh;
   }
