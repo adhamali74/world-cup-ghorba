@@ -59,7 +59,7 @@ function DashboardInner() {
   const { data: standings = [] } = useQuery({
     queryKey: ["standings"],
     queryFn: async () => {
-      const { data: players } = await supabase.from("players").select("*");
+      const { data: players } = await supabase.from("players").select("id, slug, name, avatar_color, is_admin");
       const { data: preds } = await supabase.from("predictions").select("player_id,points_earned");
       const totals: Record<string, number> = {};
       (preds ?? []).forEach((p) => {
