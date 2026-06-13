@@ -77,7 +77,11 @@ export function AppShell({ children }: { children: ReactNode }) {
                     active ? "text-primary" : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  <span className="text-lg">{n.icon}</span>
+                  {n.iconUrl ? (
+                    <img src={n.iconUrl} alt="" className="h-6 w-6 object-contain" />
+                  ) : (
+                    <span className="text-lg">{n.icon}</span>
+                  )}
                   {n.label}
                 </Link>
               );
