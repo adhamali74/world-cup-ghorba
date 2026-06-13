@@ -117,6 +117,11 @@ function DashboardInner() {
                 : "Tournament complete"}
             </div>
           </div>
+          <img
+            src={trophyAsset.url}
+            alt="FIFA World Cup trophy"
+            className="hidden sm:block h-20 w-auto drop-shadow-[0_6px_20px_rgba(250,204,21,0.4)] [animation:trophy-float_6s_ease-in-out_infinite]"
+          />
           {cd && (
             <div className="text-right">
               <div className="font-display text-xs tracking-[0.3em] text-muted-foreground">KICKOFF IN</div>
