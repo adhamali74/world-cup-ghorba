@@ -74,22 +74,11 @@ function DashboardInner() {
     },
   });
 
+  const liveFn = useServerFn(getLiveMatch);
   const { data: liveMatch } = useQuery({
-    queryKey: ["live-match"],
+    queryKey: ["espn-live-match"],
+    queryFn: () => liveFn(),
     refetchInterval: 30_000,
-    queryFn: async () => {
-      const nowIso = new Date().toISOString();
-      const windowStart = new Date(Date.now() - 2.5 * 60 * 60 * 1000).toISOString();
-      const { data } = await supabase
-        .from("matches")
-        .select("*")
-        .lte("kickoff_at", nowIso)
-        .gte("kickoff_at", windowStart)
-        .order("kickoff_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      return data as Match | null;
-    },
   });
 
   const { data: lastResult } = useQuery({
