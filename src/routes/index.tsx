@@ -161,14 +161,6 @@ function Landing() {
                 <span className="font-display text-xs tracking-wider">{p.name}</span>
               </div>
             ))}
-            {players.length < 5 && (
-              <div className="flex flex-col items-center gap-1 opacity-50">
-                <span className="w-10 h-10 sm:w-12 sm:h-12 rounded-full grid place-items-center font-display text-lg border border-dashed border-border">
-                  ?
-                </span>
-                <span className="font-display text-xs tracking-wider">OPEN</span>
-              </div>
-            )}
           </div>
         </div>
       </div>
