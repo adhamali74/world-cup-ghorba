@@ -1,8 +1,11 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { usePlayer } from "@/hooks/usePlayer";
+import { loginPlayer } from "@/lib/api/auth.functions";
 import type { Player } from "@/lib/types";
 
 const NAV = [
