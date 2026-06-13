@@ -226,6 +226,12 @@ function MatchCard({
         </div>
       </div>
 
+      {!finished && !started && /portugal/i.test(`${match.team_a} ${match.team_b}`) && (
+        <div className="mt-3 text-center text-[11px] sm:text-xs italic text-primary/80 border border-primary/30 bg-primary/5 rounded-md px-3 py-2 mx-auto max-w-md">
+          🤫 Insider tip: CR7 is scoring a hat-trick this match. Build your prediction around 3 Portugal goals — that's the secret to winning. 🐐🔥
+        </div>
+      )}
+
       {!finished && (
         <div className="mt-4 flex justify-center">
           {started ? (
