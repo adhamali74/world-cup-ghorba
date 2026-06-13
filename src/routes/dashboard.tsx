@@ -1,11 +1,13 @@
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { supabase } from "@/integrations/supabase/client";
 import { usePlayer } from "@/hooks/usePlayer";
 import type { Match, Player, Prediction } from "@/lib/types";
+import { getLiveMatch, type LiveMatchData } from "@/lib/api/live-match.functions";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
