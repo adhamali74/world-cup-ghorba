@@ -134,7 +134,7 @@ function MatchesPage() {
           />
         ))}
         {filtered.length === 0 && (
-          <div className="text-muted-foreground text-center py-12">No matches today in this stage.</div>
+          <div className="text-muted-foreground text-center py-12">No matches today. Even Ronaldo took a rest day (only one in his life).</div>
         )}
       </div>
     </div>
