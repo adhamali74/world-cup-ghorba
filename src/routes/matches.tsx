@@ -176,7 +176,7 @@ function MatchCard({
   const mut = useMutation({
     mutationFn: () => lockFn({ data: { player_slug: me!.slug, match_id: match.id, home, away } }),
     onSuccess: () => {
-      toast.success("LOCKED IN 🔒", { description: "Good luck out there." });
+      toast.success("LOCKED IN 🔒", { description: "Sealed tighter than Messi's trophy case is empty. SIUUU 🐐" });
       qc.invalidateQueries({ queryKey: ["predictions"] });
     },
     onError: (e: any) => toast.error(e?.message ?? "Could not lock prediction"),
