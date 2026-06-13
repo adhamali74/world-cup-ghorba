@@ -4,6 +4,7 @@ export type Player = {
   name: string;
   avatar_color: string;
   is_admin: boolean;
+  avatar_url?: string | null;
 };
 
 export type Match = {
