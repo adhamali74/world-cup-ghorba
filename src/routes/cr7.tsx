@@ -47,8 +47,8 @@ function CR7() {
           </li>
         ))}
         <li className="ml-6">
-          <span className="absolute -left-3 w-6 h-6 rounded-full bg-primary grid place-items-center text-xs pulse-gold">
-            🏆
+          <span className="absolute -left-4 w-8 h-8 rounded-full bg-primary/20 grid place-items-center pulse-gold overflow-hidden">
+            <img src={trophyAsset.url} alt="" className="h-6 w-6 object-contain" />
           </span>
           <div className="gold-border bg-primary/10 rounded-xl p-5 border-primary/50">
             <div className="font-display tracking-widest text-sm text-primary">2026</div>
