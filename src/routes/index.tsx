@@ -137,6 +137,9 @@ function Landing() {
                 Cristiano Ronaldo — the greatest athlete the world has ever seen. Five Ballons d'Or, every league conquered,
                 every record broken. No one has earned this trophy more. 2026 is his coronation.
               </p>
+              <p className="max-w-md mx-auto lg:mx-0 text-xs italic text-muted-foreground/80 border-l-2 border-primary/40 pl-3">
+                ⚠️ Disclaimer: if Ronaldo doesn't lift the trophy in 2026, this website will self-destruct and shut down automatically. You've been warned. 🥲
+              </p>
             </div>
 
             <div className="mt-8 flex flex-wrap gap-3 justify-center lg:justify-start">
