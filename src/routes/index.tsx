@@ -195,15 +195,15 @@ function Landing() {
 
 
         {/* Player teaser */}
-        <div className="border-t border-border pt-6">
-          <div className="font-display tracking-widest text-xs text-muted-foreground text-center mb-3">
+        <div className="border-t border-border pt-8">
+          <div className="font-display tracking-[0.3em] text-sm text-muted-foreground text-center mb-6">
             THE LEAGUE
           </div>
-          <div className="flex justify-center gap-4 sm:gap-6 flex-wrap">
+          <div className="flex justify-center gap-8 sm:gap-12 flex-wrap">
             {players.map((p) => (
-              <div key={p.id} className="flex flex-col items-center gap-1">
-                <PlayerAvatar name={p.name} color={p.avatar_color} url={p.avatar_url} size={48} />
-                <span className="font-display text-xs tracking-wider">{p.name}</span>
+              <div key={p.id} className="flex flex-col items-center gap-3">
+                <PlayerAvatar name={p.name} color={p.avatar_color} url={p.avatar_url} size={112} />
+                <span className="font-display text-base sm:text-lg tracking-wider">{p.name}</span>
               </div>
             ))}
           </div>
