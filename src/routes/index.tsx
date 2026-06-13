@@ -68,7 +68,7 @@ function Landing() {
 
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-background">
+    <div className="relative min-h-screen overflow-hidden">
       {/* Stadium spotlight backdrop */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(212,175,55,0.22),_transparent_55%)]" />
