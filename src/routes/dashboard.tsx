@@ -164,9 +164,6 @@ function DashboardInner() {
         )}
       </section>
 
-      {/* Live now */}
-      {liveMatch && <LiveMatchCard match={liveMatch} />}
-
       {/* Leaderboard */}
       <section className="gold-border bg-card rounded-2xl p-5">
         <div className="flex items-center justify-between mb-3">
@@ -190,6 +187,9 @@ function DashboardInner() {
           ))}
         </ul>
       </section>
+
+      {/* Live now — under leaderboard */}
+      {liveMatch && <LiveMatchCard match={liveMatch} />}
 
       {/* Last prediction */}
       {lastResult && (
