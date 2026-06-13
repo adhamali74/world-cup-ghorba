@@ -13,7 +13,7 @@ const NAV = [
   { to: "/matches", label: "Matches", icon: "📋" },
   { to: "/leaderboard", label: "Board", icon: "🏆" },
   { to: "/cr7", label: "CR7", icon: "👑" },
-  { to: "/rules", label: "Rules", icon: "📖" },
+  { to: "/profile", label: "Profile", icon: "👤" },
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
