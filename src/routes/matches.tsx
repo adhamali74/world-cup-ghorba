@@ -88,16 +88,17 @@ function MatchesPage() {
 
   const [stage, setStage] = useState<string>("group");
   const filtered = useMemo(() => {
-    const now = Date.now();
+    const now = new Date();
+    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const endOfDay = startOfDay + 24 * 60 * 60 * 1000;
     const isFinished = (m: Match) => m.home_score != null && m.away_score != null;
     return matches
       .filter((m) => m.stage === stage)
-      // hide matches that have already kicked off (unless still live without a final score within ~2h)
+      // only show matches kicking off today (local time), and not yet finished
       .filter((m) => {
         const ko = new Date(m.kickoff_at).getTime();
         if (isFinished(m)) return false;
-        if (ko > now) return true;
-        return now - ko < 2 * 60 * 60 * 1000; // keep live for 2h
+        return ko >= startOfDay && ko < endOfDay;
       })
       .sort((a, b) => +new Date(a.kickoff_at) - +new Date(b.kickoff_at));
   }, [matches, stage]);
