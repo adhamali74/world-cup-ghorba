@@ -1,10 +1,28 @@
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { usePlayer } from "@/hooks/usePlayer";
 import type { Player, Match } from "@/lib/types";
 import trophyAsset from "@/assets/trophy-hero.png";
+
+function useCountdown(target?: string | null) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    if (!target) return;
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [target]);
+  if (!target) return null;
+  const diff = Math.max(0, new Date(target).getTime() - now);
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+  return { d, h, m, s, done: diff === 0 };
+}
+
 
 
 export const Route = createFileRoute("/")({
@@ -33,12 +51,11 @@ function Landing() {
   });
 
   const { data: nextMatch } = useQuery({
-    queryKey: ["next-portugal"],
+    queryKey: ["next-match"],
     queryFn: async () => {
       const { data } = await supabase
         .from("matches")
         .select("*")
-        .or("team_a.eq.Portugal,team_b.eq.Portugal")
         .gte("kickoff_at", new Date().toISOString())
         .order("kickoff_at")
         .limit(1)
@@ -46,6 +63,9 @@ function Landing() {
       return data as Match | null;
     },
   });
+
+  const countdown = useCountdown(nextMatch?.kickoff_at);
+
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-background">
@@ -135,15 +155,40 @@ function Landing() {
             </div>
 
             {nextMatch && (
-              <div className="mt-8 inline-flex items-center gap-3 text-sm text-muted-foreground gold-border bg-card/60 px-4 py-2 rounded-full">
-                <span className="font-display tracking-widest text-primary">NEXT</span>
-                <span className="text-lg">{nextMatch.flag_a} {nextMatch.team_a}</span>
-                <span className="text-muted-foreground">vs</span>
-                <span className="text-lg">{nextMatch.team_b} {nextMatch.flag_b}</span>
-                <span className="text-xs">
-                  {new Date(nextMatch.kickoff_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
-                </span>
-              </div>
+              <Link
+                to="/matches"
+                className="mt-8 block gold-border bg-card/60 rounded-2xl px-5 py-4 hover:bg-card/80 transition-colors"
+              >
+                <div className="flex items-center justify-between gap-4">
+                  <span className="font-display tracking-[0.25em] text-[10px] text-primary">NEXT KICKOFF</span>
+                  <span className="text-[10px] font-display tracking-widest text-muted-foreground">
+                    {new Date(nextMatch.kickoff_at).toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
+                  </span>
+                </div>
+                <div className="mt-2 flex items-center justify-center gap-3 text-base sm:text-lg">
+                  <span>{nextMatch.flag_a} {nextMatch.team_a}</span>
+                  <span className="text-muted-foreground text-xs">vs</span>
+                  <span>{nextMatch.team_b} {nextMatch.flag_b}</span>
+                </div>
+                {countdown && !countdown.done && (
+                  <div className="mt-3 flex items-center justify-center gap-2 font-display tabular-nums">
+                    {[
+                      { v: countdown.d, l: "D" },
+                      { v: countdown.h, l: "H" },
+                      { v: countdown.m, l: "M" },
+                      { v: countdown.s, l: "S" },
+                    ].map(({ v, l }) => (
+                      <div key={l} className="flex flex-col items-center bg-background/60 border border-primary/20 rounded-md px-2 py-1 min-w-[44px]">
+                        <span className="text-lg sm:text-xl text-primary leading-none">{String(v).padStart(2, "0")}</span>
+                        <span className="text-[9px] tracking-widest text-muted-foreground mt-0.5">{l}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {countdown?.done && (
+                  <div className="mt-3 text-center font-display tracking-widest text-xs text-primary animate-pulse">KICKOFF</div>
+                )}
+              </Link>
             )}
           </div>
         </div>
