@@ -134,7 +134,7 @@ function MatchesPage() {
           />
         ))}
         {filtered.length === 0 && (
-          <div className="text-muted-foreground text-center py-12">No matches in this stage yet.</div>
+          <div className="text-muted-foreground text-center py-12">No matches today in this stage.</div>
         )}
       </div>
     </div>
