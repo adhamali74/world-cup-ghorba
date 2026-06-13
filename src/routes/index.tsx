@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { usePlayer } from "@/hooks/usePlayer";
 import type { Player, Match } from "@/lib/types";
+import trophyAsset from "@/assets/trophy-hero.png";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -45,18 +47,25 @@ function Landing() {
   });
 
   return (
-    <div className="relative min-h-screen overflow-hidden">
-      {/* Decorative 2026 backdrop */}
+    <div className="relative min-h-screen overflow-hidden bg-background">
+      {/* Stadium spotlight backdrop */}
+      <div aria-hidden className="pointer-events-none absolute inset-0">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(212,175,55,0.22),_transparent_55%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_rgba(0,90,40,0.18),_transparent_60%)]" />
+        <div className="absolute inset-0 opacity-[0.07] [background-image:linear-gradient(rgba(212,175,55,0.4)_1px,transparent_1px),linear-gradient(90deg,rgba(212,175,55,0.4)_1px,transparent_1px)] [background-size:48px_48px]" />
+      </div>
+
+      {/* Giant 26 watermark */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 grid place-items-center select-none"
       >
-        <span className="font-display text-[28vw] leading-none text-primary/5 tracking-tighter">
-          2026
+        <span className="font-display text-[38vw] sm:text-[28vw] leading-none text-primary/[0.04] tracking-tighter">
+          26
         </span>
       </div>
 
-      <div className="relative max-w-5xl mx-auto px-6 py-10 flex flex-col min-h-screen">
+      <div className="relative max-w-6xl mx-auto px-6 py-8 flex flex-col min-h-screen">
         <header className="flex items-center justify-between">
           <div>
             <div className="font-arabic text-2xl sm:text-3xl gold-text">الغُربة و كاس العالم</div>
@@ -71,41 +80,73 @@ function Landing() {
           )}
         </header>
 
-        <div className="flex-1 flex flex-col items-center justify-center text-center py-12">
-          {/* Trophy / CR7 silhouette in CSS */}
-          <div className="relative mb-6">
-            <div className="text-[10rem] sm:text-[14rem] leading-none drop-shadow-[0_0_60px_rgba(212,175,55,0.4)] animate-pulse">
-              🏆
-            </div>
-            <div className="absolute -inset-10 rounded-full bg-primary/10 blur-3xl -z-10" />
+        <div className="flex-1 grid lg:grid-cols-2 gap-10 items-center py-10">
+          {/* LEFT — Trophy showcase */}
+          <div className="relative order-2 lg:order-1 flex justify-center">
+            {/* Golden halo */}
+            <div className="absolute inset-0 -m-12 rounded-full bg-[radial-gradient(circle,_rgba(212,175,55,0.35),_transparent_60%)] blur-3xl animate-pulse" />
+            {/* Ground shadow */}
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-3/4 h-6 rounded-[100%] bg-black/70 blur-xl" />
+            <img
+              src={trophyAsset}
+              alt="FIFA World Cup 2026 Trophy"
+              className="relative w-[78%] sm:w-[70%] max-w-[480px] drop-shadow-[0_20px_60px_rgba(212,175,55,0.45)] [animation:trophy-float_6s_ease-in-out_infinite]"
+              loading="eager"
+            />
           </div>
 
-          <h1 className="font-display text-6xl sm:text-8xl gold-text leading-[0.9]">
-            THE FINAL<br />CHAPTER
-          </h1>
-          <p className="mt-6 max-w-md text-muted-foreground">
-            Ronaldo. Portugal. 2026. Five friends in exile. One trophy on the line.
-          </p>
-
-          <button
-            onClick={() => navigate({ to: slug ? "/dashboard" : "/auth" })}
-            className="btn-hero mt-10 pulse-gold"
-          >
-            {slug ? "ENTER THE COMPETITION" : "SIGN IN TO PLAY"}
-          </button>
-
-          {nextMatch && (
-            <div className="mt-10 inline-flex items-center gap-3 text-sm text-muted-foreground gold-border bg-card/60 px-4 py-2 rounded-full">
-              <span className="font-display tracking-widest text-primary">NEXT</span>
-              <span className="text-lg">{nextMatch.flag_a} {nextMatch.team_a}</span>
-              <span className="text-muted-foreground">vs</span>
-              <span className="text-lg">{nextMatch.team_b} {nextMatch.flag_b}</span>
-              <span className="text-xs">
-                {new Date(nextMatch.kickoff_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+          {/* RIGHT — Manifesto */}
+          <div className="relative order-1 lg:order-2 text-center lg:text-left">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/40 bg-primary/5 backdrop-blur-sm">
+              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+              <span className="font-display tracking-[0.25em] text-[10px] text-primary">
+                THE LAST DANCE · CR7
               </span>
             </div>
-          )}
+
+            <h1 className="mt-5 font-display text-6xl sm:text-7xl lg:text-8xl gold-text leading-[0.85]">
+              THE FINAL<br />CHAPTER
+            </h1>
+
+            <div className="mt-5 space-y-2">
+              <p className="font-display tracking-[0.2em] text-sm text-primary/90">
+                FORÇA PORTUGAL · BRING IT HOME
+              </p>
+              <p className="max-w-md mx-auto lg:mx-0 text-muted-foreground leading-relaxed">
+                Cristiano's last dance. Five brothers in exile, one trophy on the line.
+                Predict every match. Lift it together.
+              </p>
+            </div>
+
+            <div className="mt-8 flex flex-wrap gap-3 justify-center lg:justify-start">
+              <button
+                onClick={() => navigate({ to: slug ? "/dashboard" : "/auth" })}
+                className="btn-hero pulse-gold"
+              >
+                {slug ? "ENTER THE COMPETITION" : "SIGN IN TO PLAY"}
+              </button>
+              <Link
+                to="/matches"
+                className="font-display tracking-widest text-xs px-5 py-3 rounded border border-border hover:border-primary/60 hover:text-primary transition-colors self-center"
+              >
+                SEE FIXTURES →
+              </Link>
+            </div>
+
+            {nextMatch && (
+              <div className="mt-8 inline-flex items-center gap-3 text-sm text-muted-foreground gold-border bg-card/60 px-4 py-2 rounded-full">
+                <span className="font-display tracking-widest text-primary">NEXT</span>
+                <span className="text-lg">{nextMatch.flag_a} {nextMatch.team_a}</span>
+                <span className="text-muted-foreground">vs</span>
+                <span className="text-lg">{nextMatch.team_b} {nextMatch.flag_b}</span>
+                <span className="text-xs">
+                  {new Date(nextMatch.kickoff_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
+
 
         {/* Player teaser */}
         <div className="border-t border-border pt-6">

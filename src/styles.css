@@ -163,6 +163,11 @@
     50% { box-shadow: 0 0 30px 6px color-mix(in oklab, var(--primary) 30%, transparent); }
   }
 
+  @keyframes trophy-float {
+    0%, 100% { transform: translateY(0) rotate(-0.5deg); }
+    50% { transform: translateY(-14px) rotate(0.5deg); }
+  }
+
   .scoreboard-digit {
     font-family: var(--font-display);
     background: linear-gradient(180deg, var(--card-mid), var(--card));
