@@ -91,19 +91,33 @@ function LeaderboardPage() {
           const isMe = p.slug === slug;
           const gap = top - p.pts;
           return (
-            <div key={p.id} className={`p-3 rounded-xl ${isMe ? "bg-primary/10 border border-primary/30" : "bg-card-mid"}`}>
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3 min-w-0">
-                  <span className="font-display text-2xl w-8 text-center">
+            <div key={p.id} className={`p-4 rounded-xl ${isMe ? "bg-primary/10 border border-primary/30" : "bg-card-mid"}`}>
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-4 min-w-0">
+                  <span className="font-display text-2xl sm:text-3xl w-10 text-center shrink-0">
                     {["🥇","🥈","🥉"][i] ?? `${i+1}.`}
                   </span>
-                  <PlayerAvatar name={p.name} color={p.avatar_color} url={p.avatar_url} size={36} />
-                  <span className="font-display tracking-wider truncate">{p.name}</span>
-                  {i === 0 && <span className="text-lg">👑</span>}
+                  <div
+                    className={`relative rounded-full shrink-0 ${
+                      i === 0
+                        ? "ring-2 ring-yellow-400 shadow-[0_0_22px_rgba(250,204,21,0.4)]"
+                        : i === 1
+                        ? "ring-2 ring-slate-300 shadow-[0_0_18px_rgba(203,213,225,0.28)]"
+                        : i === 2
+                        ? "ring-2 ring-amber-600 shadow-[0_0_18px_rgba(217,119,6,0.28)]"
+                        : "ring-1 ring-border"
+                    }`}
+                  >
+                    <PlayerAvatar name={p.name} color={p.avatar_color} url={p.avatar_url} size={64} />
+                  </div>
+                  <div className="min-w-0 flex items-center gap-2">
+                    <span className="font-display tracking-wider text-base sm:text-lg truncate">{p.name}</span>
+                    {i === 0 && <span className="text-xl">👑</span>}
+                  </div>
                 </div>
-                <div className="text-right">
-                  <div className="font-display text-3xl gold-text tabular-nums">{p.pts}</div>
-                  <div className="text-[10px] text-muted-foreground">{p.exact} exact</div>
+                <div className="text-right shrink-0">
+                  <div className="font-display text-3xl sm:text-4xl gold-text tabular-nums leading-none">{p.pts}</div>
+                  <div className="text-[10px] text-muted-foreground mt-1">{p.exact} exact</div>
                 </div>
               </div>
               <div className="mt-2 h-1.5 rounded-full bg-background overflow-hidden">
