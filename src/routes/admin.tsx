@@ -102,7 +102,7 @@ function PinManager({ pw }: { pw: string }) {
     queryFn: async () => {
       const { data } = await supabase
         .from("players")
-        .select("id, slug, name, avatar_color, is_admin")
+        .select("id, slug, name, avatar_color, is_admin, avatar_url")
         .order("name");
       return (data ?? []) as Player[];
     },
@@ -143,12 +143,7 @@ function PinRow({ p, onSet, onClear }: { p: Player; onSet: (pin: string) => void
   const [pin, setPin] = useState("");
   return (
     <div className="gold-border bg-card rounded-xl p-3 flex items-center gap-2">
-      <span
-        className="w-9 h-9 rounded-full grid place-items-center font-display"
-        style={{ background: p.avatar_color, color: "#0A0A0C" }}
-      >
-        {p.name.charAt(0)}
-      </span>
+      <PlayerAvatar name={p.name} color={p.avatar_color} url={p.avatar_url} size={36} />
       <span className="font-display tracking-wider flex-1 truncate">{p.name}</span>
       <input
         type="text"

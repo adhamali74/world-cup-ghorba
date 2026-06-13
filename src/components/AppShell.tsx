@@ -23,7 +23,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("players")
-        .select("id, slug, name, avatar_color, is_admin")
+        .select("id, slug, name, avatar_color, is_admin, avatar_url")
         .order("name");
       if (error) throw error;
       return data as Player[];
@@ -53,12 +53,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               to="/profile"
               className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition"
             >
-              <span
-                className="w-7 h-7 rounded-full grid place-items-center font-display text-sm"
-                style={{ background: me.avatar_color, color: "#0A0A0C" }}
-              >
-                {me.name.charAt(0)}
-              </span>
+              <PlayerAvatar name={me.name} color={me.avatar_color} url={me.avatar_url} size={28} />
               <span className="font-display tracking-wider">{me.name}</span>
             </Link>
           )}

@@ -25,7 +25,7 @@ function Landing() {
     queryFn: async () => {
       const { data } = await supabase
         .from("players")
-        .select("id, slug, name, avatar_color, is_admin")
+        .select("id, slug, name, avatar_color, is_admin, avatar_url")
         .order("name");
       return (data ?? []) as Player[];
     },
@@ -156,12 +156,7 @@ function Landing() {
           <div className="flex justify-center gap-4 sm:gap-6 flex-wrap">
             {players.map((p) => (
               <div key={p.id} className="flex flex-col items-center gap-1">
-                <span
-                  className="w-10 h-10 sm:w-12 sm:h-12 rounded-full grid place-items-center font-display text-lg"
-                  style={{ background: p.avatar_color, color: "#0A0A0C" }}
-                >
-                  {p.name.charAt(0)}
-                </span>
+                <PlayerAvatar name={p.name} color={p.avatar_color} url={p.avatar_url} size={48} />
                 <span className="font-display text-xs tracking-wider">{p.name}</span>
               </div>
             ))}

@@ -59,7 +59,7 @@ function DashboardInner() {
   const { data: standings = [] } = useQuery({
     queryKey: ["standings"],
     queryFn: async () => {
-      const { data: players } = await supabase.from("players").select("id, slug, name, avatar_color, is_admin");
+      const { data: players } = await supabase.from("players").select("id, slug, name, avatar_color, is_admin, avatar_url");
       const { data: preds } = await supabase.from("predictions").select("player_id,points_earned");
       const totals: Record<string, number> = {};
       (preds ?? []).forEach((p) => {
@@ -133,12 +133,7 @@ function DashboardInner() {
                   <span className="font-display w-6 text-center">
                     {["🥇", "🥈", "🥉"][i] ?? `${i + 1}.`}
                   </span>
-                  <span
-                    className="w-7 h-7 rounded-full grid place-items-center font-display text-sm"
-                    style={{ background: p.avatar_color, color: "#0A0A0C" }}
-                  >
-                    {p.name.charAt(0)}
-                  </span>
+                  <PlayerAvatar name={p.name} color={p.avatar_color} url={p.avatar_url} size={28} />
                   <span className="font-display tracking-wider">{p.name}</span>
                 </div>
                 <span className="font-display text-2xl gold-text tabular-nums">{p.points}</span>
