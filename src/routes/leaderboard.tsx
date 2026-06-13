@@ -130,7 +130,7 @@ function LeaderboardPage() {
                 <div className="text-xs text-muted-foreground mt-2">Gap to 1st: −{gap} pts</div>
               )}
               {isMe && i === board.length - 1 && board.length > 1 && (
-                <div className="text-xs text-muted-foreground mt-2">Still time to catch up 👊</div>
+                <div className="text-xs text-muted-foreground mt-2">Last place? Ronaldo started at Sporting CP. Comebacks are written in CR7. 🐐</div>
               )}
             </div>
           );
