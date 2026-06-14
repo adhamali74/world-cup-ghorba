@@ -109,7 +109,7 @@ function DashboardInner() {
     refetchInterval: 30_000,
   });
 
-  const { data: lastResult } = useQuery({
+  const { data: lastResults } = useQuery({
     queryKey: ["last-result", slug],
     enabled: !!slug,
     queryFn: async () => {
@@ -117,13 +117,16 @@ function DashboardInner() {
       if (!me) return null;
       const { data } = await supabase
         .from("predictions")
-        .select("predicted_home, predicted_away, points_earned, match:matches(team_a,team_b,flag_a,flag_b,home_score,away_score,kickoff_at)")
+        .select("id, predicted_home, predicted_away, points_earned, match:matches(team_a,team_b,flag_a,flag_b,home_score,away_score,kickoff_at)")
         .eq("player_id", me.id)
         .not("points_earned", "is", null)
-        .order("locked_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      return data;
+        .order("locked_at", { ascending: false });
+      if (!data || data.length === 0) return null;
+      // Group by match day (local date), return the most recent day's rows
+      const dayKey = (iso: string) => new Date(iso).toLocaleDateString();
+      const latestDay = dayKey((data[0] as any).match.kickoff_at);
+      const rows = data.filter((r: any) => dayKey(r.match.kickoff_at) === latestDay);
+      return { day: latestDay, rows };
     },
   });
 
