@@ -28,6 +28,14 @@ function LeaderboardPage() {
   const { slug } = usePlayer();
 
   useEffect(() => {
+    // Auto-sync any finished match scores from ESPN on page load
+    fetch("/api/public/hooks/sync-results", { method: "POST" })
+      .then((r) => r.ok && r.json())
+      .then((res) => {
+        if (res?.updated > 0) qc.invalidateQueries({ queryKey: ["board"] });
+      })
+      .catch(() => {});
+
     const ch = supabase
       .channel("lb")
       .on("postgres_changes", { event: "*", schema: "public", table: "predictions" }, () =>
