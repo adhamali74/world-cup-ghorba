@@ -9,8 +9,22 @@ type EspnEvent = {
   }>;
 };
 
-const norm = (s: string) =>
-  s.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "");
+const TEAM_ALIASES: Record<string, string> = {
+  turkiye: "turkey",
+  trkiye: "turkey",
+  usa: "unitedstates",
+  usmnt: "unitedstates",
+};
+
+const norm = (s: string) => {
+  const normalized = s
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, "");
+  return TEAM_ALIASES[normalized] ?? normalized;
+};
 
 async function fetchEspnForDate(yyyymmdd: string): Promise<EspnEvent[]> {
   const url = `https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard?dates=${yyyymmdd}`;
@@ -18,6 +32,12 @@ async function fetchEspnForDate(yyyymmdd: string): Promise<EspnEvent[]> {
   if (!res.ok) return [];
   const data = (await res.json()) as { events?: EspnEvent[] };
   return data.events ?? [];
+}
+
+function addDaysKey(yyyymmdd: string, days: number) {
+  const date = new Date(`${yyyymmdd.slice(0, 4)}-${yyyymmdd.slice(4, 6)}-${yyyymmdd.slice(6, 8)}T00:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + days);
+  return `${date.getUTCFullYear()}${String(date.getUTCMonth() + 1).padStart(2, "0")}${String(date.getUTCDate()).padStart(2, "0")}`;
 }
 
 function teamMatches(espnName: string, dbName: string) {
@@ -62,8 +82,18 @@ async function handle() {
   let updated = 0;
   const details: any[] = [];
 
+  const eventsByDate = new Map<string, EspnEvent[]>();
+
   for (const [date, ms] of byDate) {
-    const events = await fetchEspnForDate(date);
+    const dateKeys = [addDaysKey(date, -1), date, addDaysKey(date, 1)];
+    const events = (
+      await Promise.all(
+        dateKeys.map(async (key) => {
+          if (!eventsByDate.has(key)) eventsByDate.set(key, await fetchEspnForDate(key));
+          return eventsByDate.get(key)!;
+        }),
+      )
+    ).flat();
     const finished = events.filter((e) => e.competitions[0]?.status.type.state === "post");
     for (const m of ms) {
       const ev = finished.find((e) => {
