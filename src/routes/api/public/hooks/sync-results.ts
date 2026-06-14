@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { calculatePoints } from "@/lib/scoring";
 
 type EspnCompetitor = { homeAway: "home" | "away"; score?: string; team: { displayName: string; shortDisplayName?: string; name?: string } };
 type EspnEvent = {
@@ -46,11 +47,6 @@ function teamMatches(espnName: string, dbName: string) {
   return a === b || a.includes(b) || b.includes(a);
 }
 
-function calculatePoints(predictedHome: number, predictedAway: number, actualHome: number, actualAway: number) {
-  if (predictedHome === actualHome && predictedAway === actualAway) return 3;
-  if (Math.sign(predictedHome - predictedAway) === Math.sign(actualHome - actualAway)) return 1;
-  return 0;
-}
 
 export const Route = createFileRoute("/api/public/hooks/sync-results")({
   server: {
