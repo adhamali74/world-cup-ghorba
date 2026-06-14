@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Player } from "@/lib/types";
 
 export const Route = createFileRoute("/player/$slug")({
-  head: () => ({ meta: [{ title: "Player · الغُربة و كاس العالم" }] }),
+  head: () => ({ meta: [{ title: "Player · كُسكُسي في كاس العالم" }] }),
   component: () => (
     <AppShell>
       <PlayerDetail />
