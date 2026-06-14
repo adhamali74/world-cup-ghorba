@@ -1,14 +1,15 @@
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import trophyAsset from "@/assets/world-cup-trophy.webp.asset.json";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { AppShell } from "@/components/AppShell";
 import { supabase } from "@/integrations/supabase/client";
 import { usePlayer } from "@/hooks/usePlayer";
 import type { Match, Player, Prediction } from "@/lib/types";
 import { getLiveMatch, type LiveMatchData } from "@/lib/api/live-match.functions";
+import { lockPrediction } from "@/lib/api/predictions.functions";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -135,6 +136,105 @@ function DashboardInner() {
   const r32Deadline = new Date("2026-06-28T21:00:00.000Z").getTime();
   const showBracketBanner = Date.now() < r32Deadline;
 
+  // Get current player ID
+  const { data: me } = useQuery({
+    queryKey: ["me", slug],
+    enabled: !!slug,
+    queryFn: async () => {
+      const { data } = await supabase.from("players").select("id, slug").eq("slug", slug!).maybeSingle();
+      return data as { id: string; slug: string } | null;
+    },
+  });
+
+  // Get user's prediction for the next match
+  const { data: myNextPrediction } = useQuery({
+    queryKey: ["my-prediction", nextMatch?.id, me?.id],
+    enabled: !!nextMatch && !!me,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("predictions")
+        .select("id, predicted_home, predicted_away, joker_used")
+        .eq("player_id", me!.id)
+        .eq("match_id", nextMatch!.id)
+        .maybeSingle();
+      return data as Prediction | null;
+    },
+  });
+
+  const [predHome, setPredHome] = useState(myNextPrediction?.predicted_home ?? 0);
+  const [predAway, setPredAway] = useState(myNextPrediction?.predicted_away ?? 0);
+  const [predJoker, setPredJoker] = useState(myNextPrediction?.joker_used ?? false);
+
+  useEffect(() => {
+    if (myNextPrediction) {
+      setPredHome(myNextPrediction.predicted_home);
+      setPredAway(myNextPrediction.predicted_away);
+      setPredJoker(myNextPrediction.joker_used);
+    } else {
+      setPredHome(0);
+      setPredAway(0);
+      setPredJoker(false);
+    }
+  }, [myNextPrediction?.id]);
+
+  const lockFn = useServerFn(lockPrediction);
+  const predMut = useMutation({
+    mutationFn: () => lockFn({ data: { player_slug: slug!, match_id: nextMatch!.id, home: predHome, away: predAway, joker: predJoker } }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["my-prediction"] });
+      qc.invalidateQueries({ queryKey: ["next-match"] });
+      qc.invalidateQueries({ queryKey: ["predictions"] });
+    },
+    onError: (e: any) => { /* handled by toast in UI */ },
+  });
+
+  const nextStarted = nextMatch ? new Date(nextMatch.kickoff_at).getTime() <= Date.now() : false;
+  const minsToNextKickoff = nextMatch ? (new Date(nextMatch.kickoff_at).getTime() - Date.now()) / 60000 : Infinity;
+  const nextClosingSoon = !nextStarted && minsToNextKickoff < 10;
+
+  // Urgent matches closing within 10 minutes
+  const { data: urgentMatches } = useQuery({
+    queryKey: ["urgent-matches"],
+    queryFn: async () => {
+      const tenMinFromNow = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+      const { data } = await supabase
+        .from("matches")
+        .select("id, team_a, team_b, flag_a, flag_b, kickoff_at")
+        .gte("kickoff_at", new Date().toISOString())
+        .lte("kickoff_at", tenMinFromNow)
+        .is("home_score", null)
+        .order("kickoff_at")
+        .limit(3);
+      return data ?? [];
+    },
+    refetchInterval: 30_000,
+  });
+
+  // Joker availability for next match
+  const { data: allMatches = [] } = useQuery({
+    queryKey: ["all-matches"],
+    queryFn: async () => {
+      const { data } = await supabase.from("matches").select("id, stage");
+      return data ?? [];
+    },
+  });
+  const { data: allMyPredictions = [] } = useQuery({
+    queryKey: ["all-my-predictions", me?.id],
+    enabled: !!me,
+    queryFn: async () => {
+      const { data } = await supabase.from("predictions").select("id, match_id, joker_used").eq("player_id", me!.id);
+      return data ?? [];
+    },
+  });
+  const nextJokerAvailable = useMemo(() => {
+    if (!nextMatch || !me) return false;
+    const stageMatchIds = new Set(allMatches.filter((m) => m.stage === nextMatch.stage).map((m) => m.id));
+    const alreadyUsed = allMyPredictions.some(
+      (p) => p.joker_used && p.match_id !== nextMatch.id && stageMatchIds.has(p.match_id),
+    );
+    return !alreadyUsed;
+  }, [nextMatch, me, allMatches, allMyPredictions]);
+
   return (
     <div className="space-y-6">
       {showBracketBanner && (
@@ -150,6 +250,27 @@ function DashboardInner() {
             <span className="font-display tracking-widest text-xs gold-text shrink-0">PREDICT →</span>
           </div>
         </Link>
+      )}
+
+      {urgentMatches && urgentMatches.length > 0 && (
+        <section className="border border-red-500/60 bg-red-950/20 rounded-2xl p-4 animate-pulse-fast">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-lg">⏰</span>
+            <span className="font-display tracking-widest text-sm text-red-400">PREDICTIONS CLOSING</span>
+          </div>
+          <div className="space-y-2">
+            {urgentMatches.map((m: any) => (
+              <div key={m.id} className="flex items-center justify-between">
+                <span className="font-display tracking-wider text-sm">
+                  {m.flag_a} {m.team_a} vs {m.team_b} {m.flag_b}
+                </span>
+                <Link to="/matches" className="font-display tracking-widest text-xs text-red-400 hover:text-red-300">
+                  PREDICT →
+                </Link>
+              </div>
+            ))}
+          </div>
+        </section>
       )}
 
       {/* Matchday + countdown + next match details */}
@@ -202,8 +323,82 @@ function DashboardInner() {
               {nextMatch.venue && <span>📍 {nextMatch.venue}</span>}
               {nextMatch.stage && <span className="uppercase tracking-widest">· {nextMatch.stage}{nextMatch.group_letter ? ` ${nextMatch.group_letter}` : ""}</span>}
             </div>
-            <div className="text-center mt-4">
-              <Link to="/matches" className="btn-hero text-base px-6 py-3 inline-block">PREDICT THIS</Link>
+            <div className="mt-5 pt-4 border-t border-border/50">
+              {!slug ? (
+                <p className="text-center text-xs text-muted-foreground">Pick your name to predict</p>
+              ) : nextStarted ? (
+                <div className="text-center">
+                  <div className="font-display tracking-widest text-xs text-muted-foreground mb-2">YOUR PREDICTION</div>
+                  {myNextPrediction ? (
+                    <>
+                      <div className="flex items-center justify-center gap-3">
+                        <span className="scoreboard-digit">{myNextPrediction.predicted_home}</span>
+                        <span className="font-display text-2xl text-muted-foreground">–</span>
+                        <span className="scoreboard-digit">{myNextPrediction.predicted_away}</span>
+                      </div>
+                      {myNextPrediction.joker_used && <span className="text-xs text-primary mt-1 inline-block">🔥 Joker played</span>}
+                    </>
+                  ) : (
+                    <span className="text-muted-foreground text-sm">No prediction</span>
+                  )}
+                  <div className="mt-2 font-display tracking-widest text-xs text-muted-foreground">🔒 PREDICTIONS LOCKED</div>
+                </div>
+              ) : (
+                <div className="text-center">
+                  <div className="font-display tracking-widest text-xs text-muted-foreground mb-3">
+                    {myNextPrediction ? "YOUR PREDICTION" : "LOCK IN YOUR PREDICTION"}
+                  </div>
+                  <div className="flex items-center justify-center gap-3 mb-3">
+                    <button
+                      onClick={() => setPredHome((v) => Math.max(0, v - 1))}
+                      className="text-primary hover:text-primary-glow font-display text-xl"
+                    >▼</button>
+                    <span className="scoreboard-digit tabular-nums">{predHome}</span>
+                    <button
+                      onClick={() => setPredHome((v) => Math.min(9, v + 1))}
+                      className="text-primary hover:text-primary-glow font-display text-xl"
+                    >▲</button>
+                    <span className="font-display text-2xl text-muted-foreground">–</span>
+                    <button
+                      onClick={() => setPredAway((v) => Math.max(0, v - 1))}
+                      className="text-primary hover:text-primary-glow font-display text-xl"
+                    >▼</button>
+                    <span className="scoreboard-digit tabular-nums">{predAway}</span>
+                    <button
+                      onClick={() => setPredAway((v) => Math.min(9, v + 1))}
+                      className="text-primary hover:text-primary-glow font-display text-xl"
+                    >▲</button>
+                  </div>
+                  {predJoker && (
+                    <div className="text-xs text-primary mb-2 font-display tracking-wider">🔥 JOKER</div>
+                  )}
+                  <div className="flex items-center justify-center gap-2">
+                    <button
+                      onClick={() => predMut.mutate()}
+                      disabled={predMut.isPending}
+                      className={`btn-hero text-base px-6 py-3 ${nextClosingSoon ? "!bg-red-600 !text-white" : ""}`}
+                    >
+                      {predMut.isPending ? "LOCKING..." : myNextPrediction ? "UPDATE" : nextClosingSoon ? "⚠ EXPIRING" : "LOCK IN"}
+                    </button>
+                  </div>
+                  {nextJokerAvailable && !predJoker && (
+                    <button
+                      onClick={() => setPredJoker(true)}
+                      className="mt-2 font-display tracking-widest text-xs text-muted-foreground hover:text-primary transition"
+                    >
+                      + Play Joker 🔥
+                    </button>
+                  )}
+                  {predJoker && (
+                    <button
+                      onClick={() => setPredJoker(false)}
+                      className="mt-2 font-display tracking-widest text-xs text-muted-foreground hover:text-primary transition"
+                    >
+                      Remove Joker
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -287,9 +482,12 @@ function DashboardInner() {
 }
 
 function ResultBadge({ pts }: { pts: number | null }) {
-  if (pts === 3) return <span className="font-display text-correct">✅ EXACT +3</span>;
-  if (pts === 1) return <span className="font-display text-partial">🟡 WINNER +1</span>;
-  return <span className="font-display text-wrong">❌ 0</span>;
+  if (pts === 5) return <span className="font-display text-correct">🎯 EXACT +5</span>;
+  if (pts === 3) return <span className="font-display text-correct">📊 GD +3</span>;
+  if (pts === 2) return <span className="font-display text-partial">🎯 CLOSE +2</span>;
+  if (pts === 1) return <span className="font-display text-partial">✅ WINNER +1</span>;
+  if (pts === 0) return <span className="font-display text-wrong">❌ 0</span>;
+  return <span className="font-display text-partial">🟡 +{pts}</span>;
 }
 
 function LiveMatchCard({ match }: { match: LiveMatchData }) {

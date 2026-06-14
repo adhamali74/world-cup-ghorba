@@ -179,6 +179,7 @@ function MatchCard({
   const started = kickoff <= now;
   const minsToKickoff = (kickoff - now) / 60000;
   const closing = !started && minsToKickoff < 30;
+  const closingSoon = !started && minsToKickoff < 10;
   const finished = match.home_score != null && match.away_score != null;
 
   // Joker availability: has the player used their joker on a DIFFERENT match in this stage?
@@ -203,7 +204,7 @@ function MatchCard({
   return (
     <div
       className={`gold-border bg-card rounded-2xl p-4 sm:p-5 transition ${
-        closing ? "border-destructive/50 animate-pulse" : ""
+        closingSoon ? "border-red-500/60 bg-red-950/20 animate-pulse-fast" : closing ? "border-destructive/50 animate-pulse" : ""
       }`}
     >
       <div className="flex items-center justify-between text-xs text-muted-foreground mb-3">
@@ -291,10 +292,10 @@ function MatchCard({
               onClick={() => mut.mutate()}
               disabled={mut.isPending}
               className={`btn-hero text-base px-6 py-3 ${
-                closing ? "!bg-destructive !text-destructive-foreground" : ""
+                closingSoon ? "!bg-red-600 !text-white animate-pulse-fast" : closing ? "!bg-destructive !text-destructive-foreground" : ""
               } ${joker ? "ring-2 ring-primary shadow-[0_0_24px_rgba(250,204,21,0.6)]" : ""}`}
             >
-              {mut.isPending ? "LOCKING..." : my ? (joker ? "UPDATE PICK 🔥" : "UPDATE PICK") : closing ? "⚠ CLOSING SOON" : joker ? "LOCK IN 🔥" : "LOCK IN"}
+              {mut.isPending ? "LOCKING..." : my ? (joker ? "UPDATE PICK 🔥" : "UPDATE PICK") : closingSoon ? "⚠ EXPIRING" : closing ? "⚠ CLOSING SOON" : joker ? "LOCK IN 🔥" : "LOCK IN"}
             </button>
           ) : (
             <span className="text-xs text-muted-foreground">Pick your name to predict</span>
