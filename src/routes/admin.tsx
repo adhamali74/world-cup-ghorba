@@ -11,7 +11,7 @@ import { adminSetPin, adminClearPin } from "@/lib/api/auth.functions";
 import type { Match, Player } from "@/lib/types";
 
 export const Route = createFileRoute("/admin")({
-  head: () => ({ meta: [{ title: "Admin · كُسكُسي في كاس العالم" }] }),
+  head: () => ({ meta: [{ title: "Admin · كسكسي في كاس العالم" }] }),
   component: () => (
     <AppShell>
       <Admin />

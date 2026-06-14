@@ -62,10 +62,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "كُسكُسي في كاس العالم — World Cup 2026 Predictions" },
+      { title: "كسكسي في كاس العالم — World Cup 2026 Predictions" },
       { name: "description", content: "A private World Cup 2026 score prediction league for 5 friends abroad. Predict. Score. Lift the trophy." },
       { name: "theme-color", content: "#0A0A0C" },
-      { property: "og:title", content: "كُسكُسي في كاس العالم — World Cup 2026" },
+      { property: "og:title", content: "كسكسي في كاس العالم — World Cup 2026" },
       { property: "og:description", content: "The final chapter. Predict every match. Climb the leaderboard." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

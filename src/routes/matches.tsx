@@ -12,7 +12,7 @@ import type { Match, Player, Prediction } from "@/lib/types";
 export const Route = createFileRoute("/matches")({
   head: () => ({
     meta: [
-      { title: "Matches · كُسكُسي في كاس العالم" },
+      { title: "Matches · كسكسي في كاس العالم" },
       { name: "description", content: "Lock in your World Cup 2026 score predictions before kickoff." },
     ],
   }),

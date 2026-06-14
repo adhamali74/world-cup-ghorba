@@ -13,7 +13,7 @@ import { getLiveMatch, type LiveMatchData } from "@/lib/api/live-match.functions
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
     meta: [
-      { title: "Dashboard · كُسكُسي في كاس العالم" },
+      { title: "Dashboard · كسكسي في كاس العالم" },
       { name: "description", content: "Your World Cup 2026 prediction dashboard — next match, leaderboard, last result." },
     ],
   }),
