@@ -46,7 +46,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <header className="sticky top-0 z-30 backdrop-blur-md bg-background/70 border-b border-border">
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
           <Link to="/dashboard" className="flex items-center gap-3">
-            <span className="font-arabic text-lg sm:text-xl gold-text">الغُربة و كاس العالم</span>
+            <span className="font-arabic text-lg sm:text-xl gold-text">كُسكُسي في كاس العالم</span>
             <span className="hidden sm:inline font-display tracking-widest text-xs text-muted-foreground">
               WC 2026
             </span>
