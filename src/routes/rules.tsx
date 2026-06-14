@@ -22,7 +22,9 @@ function Rules() {
 
       <section className="gold-border bg-card rounded-2xl divide-y divide-border">
         {[
-          ["🎯", "EXACT SCORE", "+3 points"],
+          ["🎯", "EXACT SCORE", "+5 points"],
+          ["📐", "PERFECT GOAL DIFFERENCE", "+3 points"],
+          ["🔥", "CLOSE WINNER (±1 each)", "+2 points"],
           ["✅", "CORRECT WINNER / DRAW", "+1 point"],
           ["❌", "WRONG", "0 points"],
         ].map(([i, l, p]) => (
