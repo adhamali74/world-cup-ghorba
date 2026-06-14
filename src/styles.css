@@ -46,7 +46,7 @@
 
   --font-display: "Bebas Neue", "Impact", sans-serif;
   --font-body: "Inter", system-ui, sans-serif;
-  --font-arabic: "Noto Naskh Arabic", "Aref Ruqaa", serif;
+  --font-arabic: "Aref Ruqaa", "Noto Naskh Arabic", serif;
 
   --shadow-gold: 0 10px 40px -10px color-mix(in oklab, var(--primary) 35%, transparent);
   --shadow-trophy: 0 0 60px color-mix(in oklab, var(--primary-glow) 40%, transparent);
