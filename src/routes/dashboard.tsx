@@ -200,7 +200,7 @@ function DashboardInner() {
           </Link>
         </div>
         <ul className="space-y-3">
-          {standings.slice(0, 4).map((p, i) => {
+          {standings.map((p, i) => {
             const medal = ["🥇", "🥈", "🥉"][i];
             const ringClass =
               i === 0
