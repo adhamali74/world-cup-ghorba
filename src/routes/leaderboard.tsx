@@ -160,7 +160,9 @@ function LeaderboardPage() {
               const cls = p.points_earned === 3 ? "text-correct" : p.points_earned === 1 ? "text-partial" : "text-wrong";
               return (
                 <li key={p.id} className="flex justify-between text-sm">
-                  <span className="font-display tracking-wider">{player.name}: {p.predicted_home}–{p.predicted_away}</span>
+                  <Link to="/player/$slug" params={{ slug: player.slug }} className="font-display tracking-wider hover:gold-text">
+                    {player.name}: {p.predicted_home}–{p.predicted_away}
+                  </Link>
                   <span className={`font-display ${cls}`}>{tag}</span>
                 </li>
               );
