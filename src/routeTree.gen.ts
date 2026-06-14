@@ -18,6 +18,7 @@ import { Route as Cr7RouteImport } from './routes/cr7'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiPublicHooksSyncResultsRouteImport } from './routes/api/public/hooks/sync-results'
 
 const RulesRoute = RulesRouteImport.update({
   id: '/rules',
@@ -64,6 +65,12 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHooksSyncResultsRoute =
+  ApiPublicHooksSyncResultsRouteImport.update({
+    id: '/api/public/hooks/sync-results',
+    path: '/api/public/hooks/sync-results',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -75,6 +82,7 @@ export interface FileRoutesByFullPath {
   '/matches': typeof MatchesRoute
   '/profile': typeof ProfileRoute
   '/rules': typeof RulesRoute
+  '/api/public/hooks/sync-results': typeof ApiPublicHooksSyncResultsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -86,6 +94,7 @@ export interface FileRoutesByTo {
   '/matches': typeof MatchesRoute
   '/profile': typeof ProfileRoute
   '/rules': typeof RulesRoute
+  '/api/public/hooks/sync-results': typeof ApiPublicHooksSyncResultsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -98,6 +107,7 @@ export interface FileRoutesById {
   '/matches': typeof MatchesRoute
   '/profile': typeof ProfileRoute
   '/rules': typeof RulesRoute
+  '/api/public/hooks/sync-results': typeof ApiPublicHooksSyncResultsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -111,6 +121,7 @@ export interface FileRouteTypes {
     | '/matches'
     | '/profile'
     | '/rules'
+    | '/api/public/hooks/sync-results'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -122,6 +133,7 @@ export interface FileRouteTypes {
     | '/matches'
     | '/profile'
     | '/rules'
+    | '/api/public/hooks/sync-results'
   id:
     | '__root__'
     | '/'
@@ -133,6 +145,7 @@ export interface FileRouteTypes {
     | '/matches'
     | '/profile'
     | '/rules'
+    | '/api/public/hooks/sync-results'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -145,6 +158,7 @@ export interface RootRouteChildren {
   MatchesRoute: typeof MatchesRoute
   ProfileRoute: typeof ProfileRoute
   RulesRoute: typeof RulesRoute
+  ApiPublicHooksSyncResultsRoute: typeof ApiPublicHooksSyncResultsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -212,6 +226,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/sync-results': {
+      id: '/api/public/hooks/sync-results'
+      path: '/api/public/hooks/sync-results'
+      fullPath: '/api/public/hooks/sync-results'
+      preLoaderRoute: typeof ApiPublicHooksSyncResultsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -225,6 +246,7 @@ const rootRouteChildren: RootRouteChildren = {
   MatchesRoute: MatchesRoute,
   ProfileRoute: ProfileRoute,
   RulesRoute: RulesRoute,
+  ApiPublicHooksSyncResultsRoute: ApiPublicHooksSyncResultsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
