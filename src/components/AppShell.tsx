@@ -67,7 +67,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       {me && (
         <nav className="fixed bottom-0 left-0 right-0 z-30 backdrop-blur-md bg-background/80 border-t border-border">
-          <div className="max-w-5xl mx-auto grid grid-cols-5">
+          <div className="max-w-5xl mx-auto grid grid-cols-6">
             {NAV.map((n) => {
               const active = loc.pathname.startsWith(n.to);
               return (
