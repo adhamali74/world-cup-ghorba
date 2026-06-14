@@ -138,7 +138,7 @@ function DashboardInner() {
 
   // Get current player ID
   const { data: me } = useQuery({
-    queryKey: ["me", slug],
+    queryKey: ["dashboard-me", slug],
     enabled: !!slug,
     queryFn: async () => {
       const { data } = await supabase.from("players").select("id, slug").eq("slug", slug!).maybeSingle();
@@ -237,6 +237,20 @@ function DashboardInner() {
 
   return (
     <div className="space-y-6">
+      <Link
+        to="/matches"
+        className="flex items-center justify-between gold-border bg-card rounded-2xl p-4 hover:bg-card-mid/60 transition group"
+      >
+        <div className="flex items-center gap-3">
+          <span className="text-2xl">📋</span>
+          <div>
+            <div className="font-display tracking-widest text-sm">MATCHES</div>
+            <div className="text-xs text-muted-foreground">Predict scores before kickoff</div>
+          </div>
+        </div>
+        <span className="font-display tracking-widest text-xs text-muted-foreground group-hover:text-primary transition">VIEW ALL →</span>
+      </Link>
+
       {showBracketBanner && (
         <Link
           to="/bracket"
@@ -293,10 +307,14 @@ function DashboardInner() {
           />
           {cd ? (
             <div className="text-right justify-self-end">
-              <div className="font-display text-xs tracking-[0.3em] text-muted-foreground">KICKOFF IN</div>
-              <div className="font-display text-2xl sm:text-4xl gold-text mt-1 tabular-nums">
-                {String(cd.d).padStart(2, "0")}:{String(cd.h).padStart(2, "0")}:{String(cd.m).padStart(2, "0")}:{String(cd.s).padStart(2, "0")}
+              <div className="font-display text-xs tracking-[0.3em] text-muted-foreground">LOCK IN</div>
+              <div className={`font-display text-2xl sm:text-4xl mt-1 tabular-nums ${minsToNextKickoff < 10 ? "text-red-400 animate-pulse-fast" : "gold-text"}`}>
+                {String(cd.h).padStart(2, "0")}:{String(cd.m).padStart(2, "0")}:{String(cd.s).padStart(2, "0")}
+                <span className="text-[10px] text-muted-foreground font-normal tracking-normal ml-1">to lock</span>
               </div>
+              {cd.d > 0 && (
+                <div className="font-display text-xs text-muted-foreground mt-0.5">{cd.d}d remaining</div>
+              )}
             </div>
           ) : <div />}
         </div>
@@ -336,7 +354,7 @@ function DashboardInner() {
                         <span className="font-display text-2xl text-muted-foreground">–</span>
                         <span className="scoreboard-digit">{myNextPrediction.predicted_away}</span>
                       </div>
-                      {myNextPrediction.joker_used && <span className="text-xs text-primary mt-1 inline-block">🔥 Joker played</span>}
+                      {myNextPrediction.joker_used && <span className="text-xs text-primary mt-1 inline-block">🔥 x2 Points</span>}
                     </>
                   ) : (
                     <span className="text-muted-foreground text-sm">No prediction</span>
@@ -370,7 +388,7 @@ function DashboardInner() {
                     >▲</button>
                   </div>
                   {predJoker && (
-                    <div className="text-xs text-primary mb-2 font-display tracking-wider">🔥 JOKER</div>
+                    <div className="text-xs text-primary mb-2 font-display tracking-wider">🔥 x2 POINTS</div>
                   )}
                   <div className="flex items-center justify-center gap-2">
                     <button
@@ -386,7 +404,7 @@ function DashboardInner() {
                       onClick={() => setPredJoker(true)}
                       className="mt-2 font-display tracking-widest text-xs text-muted-foreground hover:text-primary transition"
                     >
-                      + Play Joker 🔥
+                      + Double Points 🔥
                     </button>
                   )}
                   {predJoker && (
@@ -394,7 +412,7 @@ function DashboardInner() {
                       onClick={() => setPredJoker(false)}
                       className="mt-2 font-display tracking-widest text-xs text-muted-foreground hover:text-primary transition"
                     >
-                      Remove Joker
+                      Remove x2
                     </button>
                   )}
                 </div>

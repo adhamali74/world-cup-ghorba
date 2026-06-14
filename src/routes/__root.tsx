@@ -42,9 +42,12 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
       <div className="max-w-md text-center">
         <h1 className="font-display text-2xl gold-text">VAR check failed</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Something broke. Don't worry — Messi misses penalties too. Try again.
+          {error?.message || String(error) || "Something broke."}
         </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
+        <pre className="mt-2 text-xs text-red-400/60 bg-red-950/20 rounded p-2 max-h-32 overflow-auto text-left whitespace-pre-wrap">
+          {error?.stack?.slice(0, 500)}
+        </pre>
+        <div className="mt-4 flex flex-wrap justify-center gap-2">
           <button
             onClick={() => { router.invalidate(); reset(); }}
             className="btn-hero text-base px-6 py-3"
