@@ -46,6 +46,12 @@ function teamMatches(espnName: string, dbName: string) {
   return a === b || a.includes(b) || b.includes(a);
 }
 
+function calculatePoints(predictedHome: number, predictedAway: number, actualHome: number, actualAway: number) {
+  if (predictedHome === actualHome && predictedAway === actualAway) return 3;
+  if (Math.sign(predictedHome - predictedAway) === Math.sign(actualHome - actualAway)) return 1;
+  return 0;
+}
+
 export const Route = createFileRoute("/api/public/hooks/sync-results")({
   server: {
     handlers: {
@@ -80,6 +86,7 @@ async function handle() {
   }
 
   let updated = 0;
+  let rescored = 0;
   const details: any[] = [];
 
   const eventsByDate = new Map<string, EspnEvent[]>();
@@ -132,10 +139,9 @@ async function handle() {
         .eq("match_id", m.id);
 
       for (const p of preds ?? []) {
-        let pts = 0;
-        if (p.predicted_home === scoreA && p.predicted_away === scoreB) pts = 3;
-        else if (Math.sign(p.predicted_home - p.predicted_away) === Math.sign(scoreA - scoreB)) pts = 1;
+        const pts = calculatePoints(p.predicted_home, p.predicted_away, scoreA, scoreB);
         await supabaseAdmin.from("predictions").update({ points_earned: pts }).eq("id", p.id);
+        rescored += 1;
       }
 
       updated += 1;
@@ -143,5 +149,25 @@ async function handle() {
     }
   }
 
-  return Response.json({ ok: true, checked: matches.length, updated, details });
+  const { data: scoredMatches } = await supabaseAdmin
+    .from("matches")
+    .select("id, home_score, away_score")
+    .not("home_score", "is", null)
+    .not("away_score", "is", null);
+
+  for (const match of scoredMatches ?? []) {
+    const { data: preds } = await supabaseAdmin
+      .from("predictions")
+      .select("id, predicted_home, predicted_away, points_earned")
+      .eq("match_id", match.id);
+
+    for (const p of preds ?? []) {
+      const pts = calculatePoints(p.predicted_home, p.predicted_away, match.home_score!, match.away_score!);
+      if (p.points_earned === pts) continue;
+      await supabaseAdmin.from("predictions").update({ points_earned: pts }).eq("id", p.id);
+      rescored += 1;
+    }
+  }
+
+  return Response.json({ ok: true, checked: matches.length, updated, rescored, details });
 }
