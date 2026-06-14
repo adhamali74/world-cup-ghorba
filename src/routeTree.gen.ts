@@ -15,6 +15,7 @@ import { Route as MatchesRouteImport } from './routes/matches'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as Cr7RouteImport } from './routes/cr7'
+import { Route as BracketRouteImport } from './routes/bracket'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
@@ -51,6 +52,11 @@ const Cr7Route = Cr7RouteImport.update({
   path: '/cr7',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BracketRoute = BracketRouteImport.update({
+  id: '/bracket',
+  path: '/bracket',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -82,6 +88,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
+  '/bracket': typeof BracketRoute
   '/cr7': typeof Cr7Route
   '/dashboard': typeof DashboardRoute
   '/leaderboard': typeof LeaderboardRoute
@@ -95,6 +102,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
+  '/bracket': typeof BracketRoute
   '/cr7': typeof Cr7Route
   '/dashboard': typeof DashboardRoute
   '/leaderboard': typeof LeaderboardRoute
@@ -109,6 +117,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
+  '/bracket': typeof BracketRoute
   '/cr7': typeof Cr7Route
   '/dashboard': typeof DashboardRoute
   '/leaderboard': typeof LeaderboardRoute
@@ -124,6 +133,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/auth'
+    | '/bracket'
     | '/cr7'
     | '/dashboard'
     | '/leaderboard'
@@ -137,6 +147,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/auth'
+    | '/bracket'
     | '/cr7'
     | '/dashboard'
     | '/leaderboard'
@@ -150,6 +161,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/auth'
+    | '/bracket'
     | '/cr7'
     | '/dashboard'
     | '/leaderboard'
@@ -164,6 +176,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
   AuthRoute: typeof AuthRoute
+  BracketRoute: typeof BracketRoute
   Cr7Route: typeof Cr7Route
   DashboardRoute: typeof DashboardRoute
   LeaderboardRoute: typeof LeaderboardRoute
@@ -218,6 +231,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Cr7RouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/bracket': {
+      id: '/bracket'
+      path: '/bracket'
+      fullPath: '/bracket'
+      preLoaderRoute: typeof BracketRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -260,6 +280,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
   AuthRoute: AuthRoute,
+  BracketRoute: BracketRoute,
   Cr7Route: Cr7Route,
   DashboardRoute: DashboardRoute,
   LeaderboardRoute: LeaderboardRoute,

@@ -49,12 +49,18 @@ function LeaderboardPage() {
   const { data } = useQuery({
     queryKey: ["board"],
     queryFn: async () => {
-      const [{ data: players }, { data: preds }, { data: matches }] = await Promise.all([
+      const [{ data: players }, { data: preds }, { data: matches }, { data: brackets }] = await Promise.all([
         supabase.from("players").select("id, slug, name, avatar_color, is_admin, avatar_url"),
         supabase.from("predictions").select("player_id, points_earned, match_id, predicted_home, predicted_away, joker_used"),
         supabase.from("matches").select("id, team_a, team_b, flag_a, flag_b, home_score, away_score, kickoff_at"),
+        supabase.from("bracket_predictions").select("player_id, points_earned"),
       ]);
-      return { players: (players ?? []) as Player[], preds: preds ?? [], matches: matches ?? [] };
+      return {
+        players: (players ?? []) as Player[],
+        preds: preds ?? [],
+        matches: matches ?? [],
+        brackets: brackets ?? [],
+      };
     },
   });
 
