@@ -51,7 +51,7 @@ function LeaderboardPage() {
     queryFn: async () => {
       const [{ data: players }, { data: preds }, { data: matches }] = await Promise.all([
         supabase.from("players").select("id, slug, name, avatar_color, is_admin, avatar_url"),
-        supabase.from("predictions").select("player_id, points_earned, match_id, predicted_home, predicted_away"),
+        supabase.from("predictions").select("player_id, points_earned, match_id, predicted_home, predicted_away, joker_used"),
         supabase.from("matches").select("id, team_a, team_b, flag_a, flag_b, home_score, away_score, kickoff_at"),
       ]);
       return { players: (players ?? []) as Player[], preds: preds ?? [], matches: matches ?? [] };
@@ -65,7 +65,8 @@ function LeaderboardPage() {
     if (p.points_earned == null) return;
     const cur = totals[p.player_id] ?? { pts: 0, exact: 0 };
     cur.pts += p.points_earned;
-    if (p.points_earned === 3) cur.exact += 1;
+    // exact = 5 base, or 10 with joker
+    if (p.points_earned === 5 || p.points_earned === 10) cur.exact += 1;
     totals[p.player_id] = cur;
   });
 
@@ -156,12 +157,13 @@ function LeaderboardPage() {
             {lastPreds.map((p: any) => {
               const player = data.players.find((x) => x.id === p.player_id);
               if (!player) return null;
-              const tag = p.points_earned === 3 ? "✅ +3 EXACT" : p.points_earned === 1 ? "🟡 +1" : "❌ 0";
-              const cls = p.points_earned === 3 ? "text-correct" : p.points_earned === 1 ? "text-partial" : "text-wrong";
+              const pts = p.points_earned ?? 0;
+              const tag = pts >= 5 ? `✅ +${pts} EXACT` : pts >= 2 ? `🟢 +${pts}` : pts === 1 ? "🟡 +1" : "❌ 0";
+              const cls = pts >= 5 ? "text-correct" : pts >= 1 ? "text-partial" : "text-wrong";
               return (
                 <li key={p.id} className="flex justify-between text-sm">
                   <Link to="/player/$slug" params={{ slug: player.slug }} className="font-display tracking-wider hover:gold-text">
-                    {player.name}: {p.predicted_home}–{p.predicted_away}
+                    {player.name}: {p.predicted_home}–{p.predicted_away}{p.joker_used && <span className="ml-1 text-primary">🔥 x2</span>}
                   </Link>
                   <span className={`font-display ${cls}`}>{tag}</span>
                 </li>

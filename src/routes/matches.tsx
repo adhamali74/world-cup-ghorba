@@ -131,6 +131,8 @@ function MatchesPage() {
             me={me ?? null}
             predictions={predictions.filter((p) => p.match_id === m.id)}
             players={players}
+            allMatches={matches}
+            allPredictions={predictions}
           />
         ))}
         {filtered.length === 0 && (
@@ -146,11 +148,15 @@ function MatchCard({
   me,
   predictions,
   players,
+  allMatches,
+  allPredictions,
 }: {
   match: Match;
   me: Player | null;
   predictions: Prediction[];
   players: Player[];
+  allMatches: Match[];
+  allPredictions: Prediction[];
 }) {
   const lockFn = useServerFn(lockPrediction);
   const qc = useQueryClient();
@@ -158,11 +164,13 @@ function MatchCard({
   const my = predictions.find((p) => p.player_id === me?.id);
   const [home, setHome] = useState(my?.predicted_home ?? 0);
   const [away, setAway] = useState(my?.predicted_away ?? 0);
+  const [joker, setJoker] = useState(my?.joker_used ?? false);
 
   useEffect(() => {
     if (my) {
       setHome(my.predicted_home);
       setAway(my.predicted_away);
+      setJoker(my.joker_used);
     }
   }, [my?.id]);
 
@@ -173,10 +181,20 @@ function MatchCard({
   const closing = !started && minsToKickoff < 30;
   const finished = match.home_score != null && match.away_score != null;
 
+  // Joker availability: has the player used their joker on a DIFFERENT match in this stage?
+  const stageMatchIds = useMemo(
+    () => new Set(allMatches.filter((m) => m.stage === match.stage).map((m) => m.id)),
+    [allMatches, match.stage],
+  );
+  const jokerUsedElsewhere = !!me && allPredictions.some(
+    (p) => p.player_id === me.id && p.joker_used && p.match_id !== match.id && stageMatchIds.has(p.match_id),
+  );
+  const jokerAvailable = !jokerUsedElsewhere;
+
   const mut = useMutation({
-    mutationFn: () => lockFn({ data: { player_slug: me!.slug, match_id: match.id, home, away } }),
+    mutationFn: () => lockFn({ data: { player_slug: me!.slug, match_id: match.id, home, away, joker } }),
     onSuccess: () => {
-      toast.success("LOCKED IN 🔒", { description: "Sealed tighter than Messi's trophy case is empty. SIUUU 🐐" });
+      toast.success("LOCKED IN 🔒", { description: joker ? "🔥 JOKER PLAYED · points x2!" : "Sealed tighter than Messi's trophy case is empty. SIUUU 🐐" });
       qc.invalidateQueries({ queryKey: ["predictions"] });
     },
     onError: (e: any) => toast.error(e?.message ?? "Could not lock it in. Ronaldo would've scored already."),
@@ -232,11 +250,41 @@ function MatchCard({
         </div>
       )}
 
+      {!finished && !started && me && (
+        <div className="mt-4 pt-3 border-t border-border/50 flex items-center justify-center gap-3">
+          {jokerAvailable ? (
+            <>
+              <button
+                type="button"
+                onClick={() => setJoker((v) => !v)}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition ${
+                  joker ? "bg-primary shadow-[0_0_12px_rgba(250,204,21,0.5)]" : "bg-card-mid border border-border"
+                }`}
+                aria-pressed={joker}
+              >
+                <span
+                  className={`inline-block h-5 w-5 transform rounded-full bg-background transition ${
+                    joker ? "translate-x-5" : "translate-x-0.5"
+                  }`}
+                />
+              </button>
+              <span className="font-display tracking-wider text-xs">
+                🔥 USE JOKER <span className="text-muted-foreground">(1 left this stage)</span>
+              </span>
+            </>
+          ) : (
+            <span className="font-display tracking-wider text-xs text-muted-foreground">
+              🔥 Joker already used in this stage
+            </span>
+          )}
+        </div>
+      )}
+
       {!finished && (
         <div className="mt-4 flex justify-center">
           {started ? (
             <span className="font-display tracking-widest text-xs text-muted-foreground">
-              🔒 PREDICTIONS LOCKED
+              🔒 PREDICTIONS LOCKED {my?.joker_used && <span className="ml-1">🔥</span>}
             </span>
           ) : me ? (
             <button
@@ -244,9 +292,9 @@ function MatchCard({
               disabled={mut.isPending}
               className={`btn-hero text-base px-6 py-3 ${
                 closing ? "!bg-destructive !text-destructive-foreground" : ""
-              }`}
+              } ${joker ? "ring-2 ring-primary shadow-[0_0_24px_rgba(250,204,21,0.6)]" : ""}`}
             >
-              {mut.isPending ? "LOCKING..." : my ? "UPDATE PICK" : closing ? "⚠ CLOSING SOON" : "LOCK IN"}
+              {mut.isPending ? "LOCKING..." : my ? (joker ? "UPDATE PICK 🔥" : "UPDATE PICK") : closing ? "⚠ CLOSING SOON" : joker ? "LOCK IN 🔥" : "LOCK IN"}
             </button>
           ) : (
             <span className="text-xs text-muted-foreground">Pick your name to predict</span>
@@ -263,20 +311,21 @@ function MatchCard({
             {predictions.map((p) => {
               const player = players.find((pp) => pp.id === p.player_id);
               if (!player) return null;
+              const pts = p.points_earned;
               const color =
-                p.points_earned === 3
+                pts == null
+                  ? "text-foreground"
+                  : pts >= 5
                   ? "text-correct"
-                  : p.points_earned === 1
+                  : pts >= 1
                   ? "text-partial"
-                  : p.points_earned === 0
-                  ? "text-wrong"
-                  : "text-foreground";
+                  : "text-wrong";
               return (
                 <span
                   key={p.id}
                   className={`text-xs font-display tracking-wider px-2 py-1 rounded bg-card-mid ${color}`}
                 >
-                  {player.name}: {p.predicted_home}–{p.predicted_away}
+                  {player.name}: {p.predicted_home}–{p.predicted_away}{p.joker_used && " 🔥"}
                 </span>
               );
             })}

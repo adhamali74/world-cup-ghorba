@@ -28,13 +28,13 @@ export const submitResult = createServerFn({ method: "POST" })
     // Recalc points for every prediction on this match
     const { data: preds, error: pErr } = await supabaseAdmin
       .from("predictions")
-      .select("id, predicted_home, predicted_away")
+      .select("id, predicted_home, predicted_away, joker_used")
       .eq("match_id", data.match_id);
     if (pErr) throw new Error(pErr.message);
 
     const updates = (preds ?? []).map((p) => ({
       id: p.id,
-      points_earned: calculatePoints(p.predicted_home, p.predicted_away, data.home_score, data.away_score),
+      points_earned: calculatePoints(p.predicted_home, p.predicted_away, data.home_score, data.away_score, p.joker_used),
     }));
 
     for (const u of updates) {

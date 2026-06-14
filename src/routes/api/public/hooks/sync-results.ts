@@ -131,11 +131,11 @@ async function handle() {
       // Recalculate prediction points
       const { data: preds } = await supabaseAdmin
         .from("predictions")
-        .select("id, predicted_home, predicted_away")
+        .select("id, predicted_home, predicted_away, joker_used")
         .eq("match_id", m.id);
 
       for (const p of preds ?? []) {
-        const pts = calculatePoints(p.predicted_home, p.predicted_away, scoreA, scoreB);
+        const pts = calculatePoints(p.predicted_home, p.predicted_away, scoreA, scoreB, p.joker_used);
         await supabaseAdmin.from("predictions").update({ points_earned: pts }).eq("id", p.id);
         rescored += 1;
       }
@@ -154,11 +154,11 @@ async function handle() {
   for (const match of scoredMatches ?? []) {
     const { data: preds } = await supabaseAdmin
       .from("predictions")
-      .select("id, predicted_home, predicted_away, points_earned")
+      .select("id, predicted_home, predicted_away, points_earned, joker_used")
       .eq("match_id", match.id);
 
     for (const p of preds ?? []) {
-      const pts = calculatePoints(p.predicted_home, p.predicted_away, match.home_score!, match.away_score!);
+      const pts = calculatePoints(p.predicted_home, p.predicted_away, match.home_score!, match.away_score!, p.joker_used);
       if (p.points_earned === pts) continue;
       await supabaseAdmin.from("predictions").update({ points_earned: pts }).eq("id", p.id);
       rescored += 1;

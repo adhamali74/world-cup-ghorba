@@ -30,4 +30,5 @@ export type Prediction = {
   predicted_away: number;
   locked_at: string;
   points_earned: number | null;
+  joker_used: boolean;
 };
