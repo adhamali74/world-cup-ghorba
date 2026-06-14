@@ -76,8 +76,23 @@ function LeaderboardPage() {
     totals[p.player_id] = cur;
   });
 
+  const bracketPts: Record<string, number> = {};
+  (data.brackets as any[]).forEach((b) => {
+    if (b.points_earned != null) bracketPts[b.player_id] = b.points_earned;
+  });
+
   const board = data.players
-    .map((p) => ({ ...p, pts: totals[p.id]?.pts ?? 0, exact: totals[p.id]?.exact ?? 0 }))
+    .map((p) => {
+      const matchPts = totals[p.id]?.pts ?? 0;
+      const bp = bracketPts[p.id] ?? 0;
+      return {
+        ...p,
+        matchPts,
+        bracketPts: bp,
+        pts: matchPts + bp,
+        exact: totals[p.id]?.exact ?? 0,
+      };
+    })
     .sort((a, b) => b.pts - a.pts || b.exact - a.exact);
 
   const max = Math.max(1, ...board.map((b) => b.pts));
@@ -133,7 +148,9 @@ function LeaderboardPage() {
                 </Link>
                 <div className="text-right shrink-0">
                   <div className="font-display text-3xl sm:text-4xl gold-text tabular-nums leading-none">{p.pts}</div>
-                  <div className="text-[10px] text-muted-foreground mt-1">{p.exact} exact</div>
+                  <div className="text-[10px] text-muted-foreground mt-1">
+                    {p.matchPts} match · 🏆 {p.bracketPts}
+                  </div>
                 </div>
               </div>
               <div className="mt-2 h-1.5 rounded-full bg-background overflow-hidden">
