@@ -131,6 +131,8 @@ function MatchesPage() {
             me={me ?? null}
             predictions={predictions.filter((p) => p.match_id === m.id)}
             players={players}
+            allMatches={matches}
+            allPredictions={predictions}
           />
         ))}
         {filtered.length === 0 && (
@@ -146,11 +148,15 @@ function MatchCard({
   me,
   predictions,
   players,
+  allMatches,
+  allPredictions,
 }: {
   match: Match;
   me: Player | null;
   predictions: Prediction[];
   players: Player[];
+  allMatches: Match[];
+  allPredictions: Prediction[];
 }) {
   const lockFn = useServerFn(lockPrediction);
   const qc = useQueryClient();
@@ -158,11 +164,13 @@ function MatchCard({
   const my = predictions.find((p) => p.player_id === me?.id);
   const [home, setHome] = useState(my?.predicted_home ?? 0);
   const [away, setAway] = useState(my?.predicted_away ?? 0);
+  const [joker, setJoker] = useState(my?.joker_used ?? false);
 
   useEffect(() => {
     if (my) {
       setHome(my.predicted_home);
       setAway(my.predicted_away);
+      setJoker(my.joker_used);
     }
   }, [my?.id]);
 
@@ -173,10 +181,20 @@ function MatchCard({
   const closing = !started && minsToKickoff < 30;
   const finished = match.home_score != null && match.away_score != null;
 
+  // Joker availability: has the player used their joker on a DIFFERENT match in this stage?
+  const stageMatchIds = useMemo(
+    () => new Set(allMatches.filter((m) => m.stage === match.stage).map((m) => m.id)),
+    [allMatches, match.stage],
+  );
+  const jokerUsedElsewhere = !!me && allPredictions.some(
+    (p) => p.player_id === me.id && p.joker_used && p.match_id !== match.id && stageMatchIds.has(p.match_id),
+  );
+  const jokerAvailable = !jokerUsedElsewhere;
+
   const mut = useMutation({
-    mutationFn: () => lockFn({ data: { player_slug: me!.slug, match_id: match.id, home, away } }),
+    mutationFn: () => lockFn({ data: { player_slug: me!.slug, match_id: match.id, home, away, joker } }),
     onSuccess: () => {
-      toast.success("LOCKED IN 🔒", { description: "Sealed tighter than Messi's trophy case is empty. SIUUU 🐐" });
+      toast.success("LOCKED IN 🔒", { description: joker ? "🔥 JOKER PLAYED · points x2!" : "Sealed tighter than Messi's trophy case is empty. SIUUU 🐐" });
       qc.invalidateQueries({ queryKey: ["predictions"] });
     },
     onError: (e: any) => toast.error(e?.message ?? "Could not lock it in. Ronaldo would've scored already."),
