@@ -75,16 +75,21 @@ function AuthPage() {
             </p>
             <div className="mt-10 grid grid-cols-2 sm:grid-cols-2 gap-4">
               {isLoading && <div className="col-span-2 text-center text-muted-foreground">Lining up the squad… (no Messi, sorry)</div>}
-              {players.map((p) => (
-                <button
-                  key={p.id}
-                  onClick={() => setSelected(p)}
-                  className="gold-border bg-card hover:bg-card-mid transition rounded-2xl p-6 flex flex-col items-center gap-3 group"
-                >
-                  <PlayerAvatar name={p.name} color={p.avatar_color} url={p.avatar_url} size={80} className="group-hover:scale-105 transition" />
-                  <span className="font-display tracking-wider text-xl">{p.name}</span>
-                </button>
-              ))}
+              {players.map((p, i) => {
+                const isLoneLast = i === players.length - 1 && players.length % 2 === 1;
+                return (
+                  <button
+                    key={p.id}
+                    onClick={() => setSelected(p)}
+                    className={`gold-border bg-card hover:bg-card-mid transition rounded-2xl p-6 flex flex-col items-center gap-3 group ${
+                      isLoneLast ? "col-span-2 mx-auto w-1/2" : ""
+                    }`}
+                  >
+                    <PlayerAvatar name={p.name} color={p.avatar_color} url={p.avatar_url} size={80} className="group-hover:scale-105 transition" />
+                    <span className="font-display tracking-wider text-xl">{p.name}</span>
+                  </button>
+                );
+              })}
             </div>
           </>
         )}
