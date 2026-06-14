@@ -90,15 +90,15 @@ function MatchesPage() {
   const filtered = useMemo(() => {
     const now = new Date();
     const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-    const endOfDay = startOfDay + 24 * 60 * 60 * 1000;
+    const endOfTomorrow = startOfDay + 2 * 24 * 60 * 60 * 1000;
     const isFinished = (m: Match) => m.home_score != null && m.away_score != null;
     return matches
       .filter((m) => m.stage === stage)
-      // only show matches kicking off today (local time), and not yet finished
+      // show matches kicking off today or tomorrow (local time), and not yet finished
       .filter((m) => {
         const ko = new Date(m.kickoff_at).getTime();
         if (isFinished(m)) return false;
-        return ko >= startOfDay && ko < endOfDay;
+        return ko >= startOfDay && ko < endOfTomorrow;
       })
       .sort((a, b) => +new Date(a.kickoff_at) - +new Date(b.kickoff_at));
   }, [matches, stage]);
