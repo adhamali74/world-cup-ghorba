@@ -132,8 +132,26 @@ function DashboardInner() {
 
   const cd = useCountdown(nextMatch?.kickoff_at);
 
+  const r32Deadline = new Date("2026-06-28T21:00:00.000Z").getTime();
+  const showBracketBanner = Date.now() < r32Deadline;
+
   return (
     <div className="space-y-6">
+      {showBracketBanner && (
+        <Link
+          to="/bracket"
+          className="block gold-border bg-gradient-to-r from-primary/15 via-primary/5 to-primary/15 rounded-2xl p-4 hover:from-primary/25 hover:to-primary/25 transition"
+        >
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <div className="font-display tracking-widest text-sm gold-text">🏆 FINAL 4 BRACKET</div>
+              <div className="text-xs text-muted-foreground mt-1">Submit your semi-finalists + winner before June 28!</div>
+            </div>
+            <span className="font-display tracking-widest text-xs gold-text shrink-0">PREDICT →</span>
+          </div>
+        </Link>
+      )}
+
       {/* Matchday + countdown + next match details */}
       <section className="gold-border bg-card rounded-2xl p-5">
         <div className="relative grid grid-cols-[1fr_auto_1fr] items-center gap-3">
