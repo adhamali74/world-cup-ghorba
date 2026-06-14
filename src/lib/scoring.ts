@@ -3,22 +3,21 @@ export function calculatePoints(
   predictedAway: number,
   actualHome: number,
   actualAway: number,
+  joker: boolean = false,
 ): number {
   const predGD = predictedHome - predictedAway;
   const actualGD = actualHome - actualAway;
   const correctWinner = Math.sign(predGD) === Math.sign(actualGD);
-  if (!correctWinner) return 0;
 
-  const exact = predictedHome === actualHome && predictedAway === actualAway;
-  if (exact) return 5;
-
-  const perfectGD = predGD === actualGD;
-  if (perfectGD) return 3;
-
-  const closeScores =
+  let pts: number;
+  if (!correctWinner) pts = 0;
+  else if (predictedHome === actualHome && predictedAway === actualAway) pts = 5;
+  else if (predGD === actualGD) pts = 3;
+  else if (
     Math.abs(predictedHome - actualHome) <= 1 &&
-    Math.abs(predictedAway - actualAway) <= 1;
-  if (closeScores) return 2;
+    Math.abs(predictedAway - actualAway) <= 1
+  ) pts = 2;
+  else pts = 1;
 
-  return 1;
+  return joker ? pts * 2 : pts;
 }
