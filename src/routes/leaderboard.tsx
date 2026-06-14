@@ -102,12 +102,12 @@ function LeaderboardPage() {
           return (
             <div key={p.id} className={`p-4 rounded-xl ${isMe ? "bg-primary/10 border border-primary/30" : "bg-card-mid"}`}>
               <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-4 min-w-0">
+                <Link to="/player/$slug" params={{ slug: p.slug }} className="flex items-center gap-4 min-w-0 flex-1 group">
                   <span className="font-display text-2xl sm:text-3xl w-10 text-center shrink-0">
                     {["🥇","🥈","🥉"][i] ?? `${i+1}.`}
                   </span>
                   <div
-                    className={`relative rounded-full shrink-0 ${
+                    className={`relative rounded-full shrink-0 transition-transform group-hover:scale-105 ${
                       i === 0
                         ? "ring-2 ring-yellow-400 shadow-[0_0_22px_rgba(250,204,21,0.4)]"
                         : i === 1
@@ -120,10 +120,10 @@ function LeaderboardPage() {
                     <PlayerAvatar name={p.name} color={p.avatar_color} url={p.avatar_url} size={64} />
                   </div>
                   <div className="min-w-0 flex items-center gap-2">
-                    <span className="font-display tracking-wider text-base sm:text-lg truncate">{p.name}</span>
+                    <span className="font-display tracking-wider text-base sm:text-lg truncate group-hover:gold-text">{p.name}</span>
                     {i === 0 && <span className="text-xl">👑</span>}
                   </div>
-                </div>
+                </Link>
                 <div className="text-right shrink-0">
                   <div className="font-display text-3xl sm:text-4xl gold-text tabular-nums leading-none">{p.pts}</div>
                   <div className="text-[10px] text-muted-foreground mt-1">{p.exact} exact</div>
