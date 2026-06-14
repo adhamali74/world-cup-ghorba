@@ -14,7 +14,7 @@ const search = z.object({ redirect: z.string().optional() });
 
 export const Route = createFileRoute("/auth")({
   validateSearch: (s) => search.parse(s),
-  head: () => ({ meta: [{ title: "Sign in · كُسكُسي في كاس العالم" }] }),
+  head: () => ({ meta: [{ title: "Sign in · كسكسي في كاس العالم" }] }),
   component: AuthPage,
 });
 
@@ -63,7 +63,7 @@ function AuthPage() {
     <div className="min-h-screen grid place-items-center px-4 py-12 stadium-night">
       <div className="max-w-lg w-full">
         <div className="text-center mb-10">
-          <div className="font-arabic text-3xl gold-text mb-2">كُسكُسي في كاس العالم</div>
+          <div className="font-arabic text-3xl gold-text mb-2">كسكسي في كاس العالم</div>
           <div className="font-display tracking-[0.4em] text-xs text-muted-foreground">WC 2026 · SIGN IN</div>
         </div>
 

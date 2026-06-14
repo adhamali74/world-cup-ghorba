@@ -28,7 +28,7 @@ function useCountdown(target?: string | null) {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "كُسكُسي في كاس العالم — The Final Chapter" },
+      { title: "كسكسي في كاس العالم — The Final Chapter" },
       { name: "description", content: "5 friends. 104 matches. One trophy. World Cup 2026 prediction league." },
     ],
   }),
@@ -89,7 +89,7 @@ function Landing() {
       <div className="relative max-w-6xl mx-auto px-6 py-8 flex flex-col min-h-screen">
         <header className="relative flex items-center justify-center">
           <div className="text-center">
-            <div className="font-arabic text-3xl sm:text-4xl gold-text leading-tight">كُسكُسي في كاس العالم</div>
+            <div className="font-arabic text-3xl sm:text-4xl gold-text leading-tight">كسكسي في كاس العالم</div>
             <div className="font-display tracking-[0.3em] text-xs text-muted-foreground mt-1">
               FIFA WORLD CUP · 2026
             </div>
