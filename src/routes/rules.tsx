@@ -43,7 +43,7 @@ function Rules() {
           <li>Late predictions are not accepted. Too slow? Too bad 😤</li>
           <li>If a match goes to extra time or penalties, the <strong className="text-foreground">90-minute score</strong> counts.</li>
           <li>Tie on points? Most <strong className="text-foreground">exact scores</strong> wins.</li>
-          <li>Adham is admin. Adham enters the official results. Adham is always right.</li>
+          
         </ul>
       </section>
     </div>
