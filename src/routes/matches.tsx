@@ -311,14 +311,15 @@ function MatchCard({
             {predictions.map((p) => {
               const player = players.find((pp) => pp.id === p.player_id);
               if (!player) return null;
+              const pts = p.points_earned;
               const color =
-                p.points_earned === 3
+                pts == null
+                  ? "text-foreground"
+                  : pts >= 5
                   ? "text-correct"
-                  : p.points_earned === 1
+                  : pts >= 1
                   ? "text-partial"
-                  : p.points_earned === 0
-                  ? "text-wrong"
-                  : "text-foreground";
+                  : "text-wrong";
               return (
                 <span
                   key={p.id}
