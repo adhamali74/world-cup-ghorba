@@ -11,6 +11,7 @@ const NAV = [
   { to: "/dashboard", label: "Home", icon: "⚽", iconUrl: null as string | null },
   { to: "/matches", label: "Matches", icon: "📋", iconUrl: null },
   { to: "/leaderboard", label: "Board", icon: "", iconUrl: trophyAsset.url },
+  { to: "/rules", label: "Rules", icon: "📜", iconUrl: null },
   { to: "/cr7", label: "CR7", icon: "👑", iconUrl: null },
   { to: "/profile", label: "Profile", icon: "👤", iconUrl: null },
 ] as const;
