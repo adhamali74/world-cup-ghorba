@@ -14,6 +14,50 @@ export type Database = {
   }
   public: {
     Tables: {
+      bracket_predictions: {
+        Row: {
+          id: string
+          player_id: string
+          points_earned: number | null
+          semi_finalist_1: string
+          semi_finalist_2: string
+          semi_finalist_3: string
+          semi_finalist_4: string
+          submitted_at: string
+          winner: string
+        }
+        Insert: {
+          id?: string
+          player_id: string
+          points_earned?: number | null
+          semi_finalist_1: string
+          semi_finalist_2: string
+          semi_finalist_3: string
+          semi_finalist_4: string
+          submitted_at?: string
+          winner: string
+        }
+        Update: {
+          id?: string
+          player_id?: string
+          points_earned?: number | null
+          semi_finalist_1?: string
+          semi_finalist_2?: string
+          semi_finalist_3?: string
+          semi_finalist_4?: string
+          submitted_at?: string
+          winner?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bracket_predictions_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: true
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       matches: {
         Row: {
           away_score: number | null
