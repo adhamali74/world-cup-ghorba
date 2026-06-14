@@ -12,7 +12,7 @@ import { changePin } from "@/lib/api/auth.functions";
 import type { Player } from "@/lib/types";
 
 export const Route = createFileRoute("/profile")({
-  head: () => ({ meta: [{ title: "Profile · الغُربة و كاس العالم" }] }),
+  head: () => ({ meta: [{ title: "Profile · كُسكُسي في كاس العالم" }] }),
   component: () => (
     <AppShell>
       <Profile />

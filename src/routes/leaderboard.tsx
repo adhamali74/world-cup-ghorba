@@ -13,7 +13,7 @@ import type { Player } from "@/lib/types";
 export const Route = createFileRoute("/leaderboard")({
   head: () => ({
     meta: [
-      { title: "Leaderboard · الغُربة و كاس العالم" },
+      { title: "Leaderboard · كُسكُسي في كاس العالم" },
       { name: "description", content: "Live World Cup 2026 prediction standings for the 5-friend league." },
     ],
   }),
@@ -92,7 +92,7 @@ function LeaderboardPage() {
           className="mx-auto mb-3 h-32 w-auto drop-shadow-[0_8px_24px_rgba(250,204,21,0.45)]"
         />
         <h1 className="font-display text-5xl gold-text">LEADERBOARD</h1>
-        <p className="font-arabic text-muted-foreground mt-1">الغُربة و كاس العالم · 2026</p>
+        <p className="font-arabic text-muted-foreground mt-1">كُسكُسي في كاس العالم · 2026</p>
       </div>
 
       <section className="gold-border bg-card rounded-2xl p-5 space-y-3">

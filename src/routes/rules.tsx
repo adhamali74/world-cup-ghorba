@@ -4,7 +4,7 @@ import { AppShell } from "@/components/AppShell";
 export const Route = createFileRoute("/rules")({
   head: () => ({
     meta: [
-      { title: "Scoring Rules · الغُربة و كاس العالم" },
+      { title: "Scoring Rules · كُسكُسي في كاس العالم" },
       { name: "description", content: "Simple scoring rules for the World Cup 2026 friends-only prediction league." },
     ],
   }),
