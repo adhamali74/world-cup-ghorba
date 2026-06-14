@@ -1,7 +1,7 @@
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import trophyAsset from "@/assets/world-cup-trophy.webp.asset.json";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/AppShell";
@@ -45,6 +45,33 @@ function Dashboard() {
 
 function DashboardInner() {
   const { slug } = usePlayer();
+  const qc = useQueryClient();
+
+  useEffect(() => {
+    fetch("/api/public/hooks/sync-results", { method: "POST" })
+      .then((r) => r.ok && r.json())
+      .then((res) => {
+        if (res?.updated > 0 || res?.rescored > 0) {
+          qc.invalidateQueries({ queryKey: ["standings"] });
+          qc.invalidateQueries({ queryKey: ["last-result"] });
+          qc.invalidateQueries({ queryKey: ["next-match"] });
+        }
+      })
+      .catch(() => {});
+
+    const channel = supabase
+      .channel("dashboard-scores")
+      .on("postgres_changes", { event: "*", schema: "public", table: "predictions" }, () => {
+        qc.invalidateQueries({ queryKey: ["standings"] });
+        qc.invalidateQueries({ queryKey: ["last-result"] });
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "matches" }, () => {
+        qc.invalidateQueries({ queryKey: ["next-match"] });
+        qc.invalidateQueries({ queryKey: ["last-result"] });
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [qc]);
 
   const { data: nextMatch } = useQuery({
     queryKey: ["next-match"],

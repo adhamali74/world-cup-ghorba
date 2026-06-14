@@ -9,8 +9,22 @@ type EspnEvent = {
   }>;
 };
 
-const norm = (s: string) =>
-  s.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "");
+const TEAM_ALIASES: Record<string, string> = {
+  turkiye: "turkey",
+  trkiye: "turkey",
+  usa: "unitedstates",
+  usmnt: "unitedstates",
+};
+
+const norm = (s: string) => {
+  const normalized = s
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, "");
+  return TEAM_ALIASES[normalized] ?? normalized;
+};
 
 async function fetchEspnForDate(yyyymmdd: string): Promise<EspnEvent[]> {
   const url = `https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard?dates=${yyyymmdd}`;
@@ -20,10 +34,22 @@ async function fetchEspnForDate(yyyymmdd: string): Promise<EspnEvent[]> {
   return data.events ?? [];
 }
 
+function addDaysKey(yyyymmdd: string, days: number) {
+  const date = new Date(`${yyyymmdd.slice(0, 4)}-${yyyymmdd.slice(4, 6)}-${yyyymmdd.slice(6, 8)}T00:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + days);
+  return `${date.getUTCFullYear()}${String(date.getUTCMonth() + 1).padStart(2, "0")}${String(date.getUTCDate()).padStart(2, "0")}`;
+}
+
 function teamMatches(espnName: string, dbName: string) {
   const a = norm(espnName);
   const b = norm(dbName);
   return a === b || a.includes(b) || b.includes(a);
+}
+
+function calculatePoints(predictedHome: number, predictedAway: number, actualHome: number, actualAway: number) {
+  if (predictedHome === actualHome && predictedAway === actualAway) return 3;
+  if (Math.sign(predictedHome - predictedAway) === Math.sign(actualHome - actualAway)) return 1;
+  return 0;
 }
 
 export const Route = createFileRoute("/api/public/hooks/sync-results")({
@@ -60,10 +86,21 @@ async function handle() {
   }
 
   let updated = 0;
+  let rescored = 0;
   const details: any[] = [];
 
+  const eventsByDate = new Map<string, EspnEvent[]>();
+
   for (const [date, ms] of byDate) {
-    const events = await fetchEspnForDate(date);
+    const dateKeys = [addDaysKey(date, -1), date, addDaysKey(date, 1)];
+    const events = (
+      await Promise.all(
+        dateKeys.map(async (key) => {
+          if (!eventsByDate.has(key)) eventsByDate.set(key, await fetchEspnForDate(key));
+          return eventsByDate.get(key)!;
+        }),
+      )
+    ).flat();
     const finished = events.filter((e) => e.competitions[0]?.status.type.state === "post");
     for (const m of ms) {
       const ev = finished.find((e) => {
@@ -102,10 +139,9 @@ async function handle() {
         .eq("match_id", m.id);
 
       for (const p of preds ?? []) {
-        let pts = 0;
-        if (p.predicted_home === scoreA && p.predicted_away === scoreB) pts = 3;
-        else if (Math.sign(p.predicted_home - p.predicted_away) === Math.sign(scoreA - scoreB)) pts = 1;
+        const pts = calculatePoints(p.predicted_home, p.predicted_away, scoreA, scoreB);
         await supabaseAdmin.from("predictions").update({ points_earned: pts }).eq("id", p.id);
+        rescored += 1;
       }
 
       updated += 1;
@@ -113,5 +149,25 @@ async function handle() {
     }
   }
 
-  return Response.json({ ok: true, checked: matches.length, updated, details });
+  const { data: scoredMatches } = await supabaseAdmin
+    .from("matches")
+    .select("id, home_score, away_score")
+    .not("home_score", "is", null)
+    .not("away_score", "is", null);
+
+  for (const match of scoredMatches ?? []) {
+    const { data: preds } = await supabaseAdmin
+      .from("predictions")
+      .select("id, predicted_home, predicted_away, points_earned")
+      .eq("match_id", match.id);
+
+    for (const p of preds ?? []) {
+      const pts = calculatePoints(p.predicted_home, p.predicted_away, match.home_score!, match.away_score!);
+      if (p.points_earned === pts) continue;
+      await supabaseAdmin.from("predictions").update({ points_earned: pts }).eq("id", p.id);
+      rescored += 1;
+    }
+  }
+
+  return Response.json({ ok: true, checked: matches.length, updated, rescored, details });
 }
