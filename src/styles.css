@@ -124,7 +124,7 @@
   }
 
   .font-display { font-family: var(--font-display); letter-spacing: 0.02em; }
-  .font-arabic { font-family: var(--font-arabic); }
+  .font-arabic { font-family: var(--font-arabic); font-weight: 700; }
 }
 
 @layer components {
