@@ -98,6 +98,7 @@ export type Database = {
       predictions: {
         Row: {
           id: string
+          joker_used: boolean
           locked_at: string
           match_id: string
           player_id: string
@@ -107,6 +108,7 @@ export type Database = {
         }
         Insert: {
           id?: string
+          joker_used?: boolean
           locked_at?: string
           match_id: string
           player_id: string
@@ -116,6 +118,7 @@ export type Database = {
         }
         Update: {
           id?: string
+          joker_used?: boolean
           locked_at?: string
           match_id?: string
           player_id?: string
