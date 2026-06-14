@@ -109,7 +109,7 @@ function DashboardInner() {
     refetchInterval: 30_000,
   });
 
-  const { data: lastResult } = useQuery({
+  const { data: lastResults } = useQuery({
     queryKey: ["last-result", slug],
     enabled: !!slug,
     queryFn: async () => {
@@ -117,13 +117,16 @@ function DashboardInner() {
       if (!me) return null;
       const { data } = await supabase
         .from("predictions")
-        .select("predicted_home, predicted_away, points_earned, match:matches(team_a,team_b,flag_a,flag_b,home_score,away_score,kickoff_at)")
+        .select("id, predicted_home, predicted_away, points_earned, match:matches(team_a,team_b,flag_a,flag_b,home_score,away_score,kickoff_at)")
         .eq("player_id", me.id)
         .not("points_earned", "is", null)
-        .order("locked_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      return data;
+        .order("locked_at", { ascending: false });
+      if (!data || data.length === 0) return null;
+      // Group by match day (local date), return the most recent day's rows
+      const dayKey = (iso: string) => new Date(iso).toLocaleDateString();
+      const latestDay = dayKey((data[0] as any).match.kickoff_at);
+      const rows = data.filter((r: any) => dayKey(r.match.kickoff_at) === latestDay);
+      return { day: latestDay, rows };
     },
   });
 
@@ -235,23 +238,30 @@ function DashboardInner() {
       {/* Live now — under leaderboard */}
       {liveMatch && <LiveMatchCard match={liveMatch} />}
 
-      {/* Last prediction */}
-      {lastResult && (
+      {/* Last matchday predictions */}
+      {lastResults && lastResults.rows.length > 0 && (
         <section className="gold-border bg-card rounded-2xl p-5">
-          <h3 className="font-display tracking-widest text-lg mb-3">YOUR LAST PREDICTION</h3>
-          <div className="flex items-center justify-between">
-            <div className="font-display text-xl">
-              {(lastResult as any).match.flag_a} {(lastResult as any).match.team_a}{" "}
-              <span className="gold-text">{lastResult.predicted_home}</span>
-              <span className="text-muted-foreground"> – </span>
-              <span className="gold-text">{lastResult.predicted_away}</span>{" "}
-              {(lastResult as any).match.team_b} {(lastResult as any).match.flag_b}
-            </div>
-            <ResultBadge pts={lastResult.points_earned} />
-          </div>
-          <div className="text-xs text-muted-foreground mt-2">
-            Final: {(lastResult as any).match.home_score}–{(lastResult as any).match.away_score}
-          </div>
+          <h3 className="font-display tracking-widest text-lg mb-1">YOUR LAST MATCHDAY</h3>
+          <p className="text-xs text-muted-foreground mb-3">{lastResults.day}</p>
+          <ul className="space-y-2">
+            {lastResults.rows.map((r: any) => (
+              <li key={r.id} className="bg-card-mid rounded-xl p-3">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="font-display text-sm sm:text-base truncate">
+                    {r.match.flag_a} {r.match.team_a}{" "}
+                    <span className="gold-text">{r.predicted_home}</span>
+                    <span className="text-muted-foreground"> – </span>
+                    <span className="gold-text">{r.predicted_away}</span>{" "}
+                    {r.match.team_b} {r.match.flag_b}
+                  </div>
+                  <ResultBadge pts={r.points_earned} />
+                </div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  Final: {r.match.home_score}–{r.match.away_score}
+                </div>
+              </li>
+            ))}
+          </ul>
         </section>
       )}
     </div>
